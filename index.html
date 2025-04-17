@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Controle de Dívidas</title>
+  <style>
+    body { font-family: Arial; max-width: 800px; margin: 0 auto; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    button { padding: 5px 10px; margin: 2px; }
+  </style>
+</head>
+<body>
+  <h1>Controle de Dívidas</h1>
+  
+  <div>
+    <input type="text" id="devedorInput" placeholder="Nome do devedor">
+    <input type="number" id="valorInput" placeholder="Valor">
+    <button onclick="addDebt()">Adicionar Dívida</button>
+  </div>
+
+  <table id="debtsTable">
+    <thead>
+      <tr>
+        <th>Devedor</th>
+        <th>Valor</th>
+        <th>Pago</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    // Dados fictícios (substituirá pelo Google Sheets depois)
+    let debts = [
+      { id: 1, debtor: "João", amount: 1000, paid: 200 },
+      { id: 2, debtor: "Maria", amount: 500, paid: 0 }
+    ];
+
+    function loadDebts() {
+      const table = document.querySelector('#debtsTable tbody');
+      table.innerHTML = debts.map(debt => `
+        <tr>
+          <td>${debt.debtor}</td>
+          <td>R$ ${debt.amount.toFixed(2)}</td>
+          <td>R$ ${debt.paid.toFixed(2)}</td>
+          <td>
+            <button onclick="addPayment(${debt.id})">Pagamento</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function addDebt() {
+      const debtor = document.getElementById('devedorInput').value;
+      const amount = parseFloat(document.getElementById('valorInput').value);
+      
+      if (debtor && amount) {
+        debts.push({
+          id: debts.length + 1,
+          debtor,
+          amount,
+          paid: 0
+        });
+        loadDebts();
+      }
+    }
+
+    function addPayment(debtId) {
+      const amount = parseFloat(prompt("Valor do pagamento:"));
+      const debt = debts.find(d => d.id === debtId);
+      
+      if (debt && amount) {
+        debt.paid += amount;
+        loadDebts();
+      }
+    }
+
+    // Carrega os dados ao iniciar
+    loadDebts();
+  </script>
+</body>
+</html>
