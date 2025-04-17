@@ -31,76 +31,87 @@
     <tbody></tbody>
   </table>
 
- <script>
-  // Configurações da sua planilha (ALTERE ESTES VALORES)
-  const SPREADSHEET_ID = "https://docs.google.com/spreadsheets/d/1gca4c0Bu_ZbhIs8ZA9rSih4o8vknjP7b-lYUdfAo6MQ/edit?gid=1600298421#gid=1600298421"; // Id da sua planilha (da URL)
-  const SHEET_NAME = "Dívidas"; // Nome da aba
-  const API_KEY = "SAIzaSyC6KCQPwchOnAUZjOkj-pC8AxGYYYLRyPU"; // Você vai gerar no Passo 2
-
+<script>
+  // Configurações da SUA planilha (já com seus dados)
+  const SPREADSHEET_ID = "1gca4c0Bu_ZbhIs8ZA9rSih4o8vknjP7b-lYUdfAo6MQ";
+  const API_KEY = "aizasyc6kcqpwchonauzjokj-pc8axgyyylrypu";
+  
   // Função para carregar dívidas
   async function loadDebts() {
     try {
+      // Acessa a aba "Dívidas!A2:G" (ajustado para sua estrutura)
       const response = await fetch(
-        `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A2:E?key=${API_KEY}`
+        `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Dívidas!A2:G?key=${API_KEY}`
       );
       
       const data = await response.json();
-      const debts = data.values || [];
+      const rows = data.values || [];
       
       const table = document.querySelector('#debtsTable tbody');
-      table.innerHTML = debts.map(row => `
+      table.innerHTML = rows.map(row => `
         <tr>
-          <td>${row[1]}</td> <!-- Devedor -->
-          <td>R$ ${parseFloat(row[2]).toFixed(2)}</td> <!-- Valor Total -->
-          <td>R$ ${parseFloat(row[3]).toFixed(2)}</td> <!-- Valor Pago -->
+          <td>${row[1] || ''}</td> <!-- Coluna B - Nome -->
+          <td>R$ ${parseFloat(row[2] || 0).toFixed(2)}</td> <!-- Coluna C - Valor -->
+          <td>R$ ${parseFloat(row[3] || 0).toFixed(2)}</td> <!-- Coluna D - Pago -->
           <td>
-            <button onclick="showPaymentModal('${row[0]}', ${row[2]}, ${row[3]})">
-              Registrar Pagamento
+            <button onclick="registerPayment('${row[0]}', ${row[2]}, ${row[3]})">
+              Pagar
             </button>
           </td>
         </tr>
       `).join('');
     } catch (error) {
-      console.error("Erro ao carregar dívidas:", error);
+      console.error("Erro ao carregar:", error);
+      alert("Erro ao carregar dados. Verifique o console.");
     }
   }
 
-  // Função para adicionar pagamento (simplificado)
-  async function addPayment(debtId, amount) {
-    const paymentDate = new Date().toISOString().split('T')[0];
+  // Função para registrar pagamento
+  async function registerPayment(debtId, totalAmount, paidAmount) {
+    const remaining = totalAmount - paidAmount;
+    const paymentValue = prompt(`Valor do pagamento (Saldo: R$ ${remaining.toFixed(2)})`);
     
+    if (!paymentValue || paymentValue <= 0 || paymentValue > remaining) {
+      alert("Valor inválido!");
+      return;
+    }
+
     try {
-      const response = await fetch(
-        `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Pagamentos!A1:append?valueInputOption=USER_ENTERED&key=${API_KEY}`,
+      // Envia para a aba "Pagamentos!A:D"
+      await fetch(
+        `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Pagamentos!A1:D1?valueInputOption=USER_ENTERED&key=${API_KEY}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            values: [[debtId, amount, paymentDate, "Online"]]
+            values: [
+              [debtId, paymentValue, new Date().toLocaleDateString(), "Web"]
+            ]
           })
         }
       );
       
-      alert("Pagamento registrado com sucesso!");
+      // Atualiza o valor pago na aba Dívidas
+      await fetch(
+        `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Dívidas!D${parseInt(debtId)+1}?valueInputOption=USER_ENTERED&key=${API_KEY}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            values: [[parseFloat(paidAmount) + parseFloat(paymentValue)]]
+          })
+        }
+      );
+      
+      alert("Pagamento registrado!");
       loadDebts(); // Atualiza a tabela
     } catch (error) {
-      console.error("Erro ao registrar pagamento:", error);
+      console.error("Erro:", error);
+      alert("Falha ao registrar. Verifique o console.");
     }
   }
 
-  // Modal simplificado para pagamentos
-  function showPaymentModal(debtId, totalAmount, paidAmount) {
-    const remaining = totalAmount - paidAmount;
-    const amount = prompt(`Registrar pagamento (máx: R$ ${remaining.toFixed(2)}):`);
-    
-    if (amount && amount > 0 && amount <= remaining) {
-      addPayment(debtId, amount);
-    } else {
-      alert("Valor inválido!");
-    }
-  }
-
-  // Carrega as dívidas quando a página abre
+  // Carrega os dados quando a página abre
   window.onload = loadDebts;
 </script>
 </body>
