@@ -6,11 +6,12 @@ const lista = document.getElementById("lista-promissorias");
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const nova = {
-    id: form.id.value,
+    // id será gerado no backend
     nome: form.nome.value,
+    telefone: form.telefone.value,
     valor: form.valor.value,
     data: form.data.value,
-    status: form.status.value,
+    status: "pendente", // definido no backend
     observacoes: form.observacoes.value,
   };
 
@@ -23,6 +24,7 @@ form.addEventListener("submit", async (e) => {
   form.reset();
   carregarPromissorias();
 });
+
 
 async function carregarPromissorias() {
   lista.innerHTML = "Carregando...";
