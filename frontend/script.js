@@ -150,11 +150,15 @@ async function carregarPromissorias() {
     li.appendChild(spanIdentificacao);
     li.appendChild(texto);
 
-    // Adiciona observações (se existirem)
+    const dataBR = p.data.split('-').reverse().join('/');
+    const textoFinal = document.createTextNode(` - ${dataBR}`);
+    li.appendChild(textoFinal);
+
     if (p.observacoes) {
     const obs = document.createTextNode(` - Obs.: ${p.observacoes}`);
     li.appendChild(obs);
     }
+
 
     li.appendChild(texto);
     lista.appendChild(li);
