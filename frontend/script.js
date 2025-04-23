@@ -131,27 +131,30 @@ async function carregarPromissorias() {
     li.appendChild(btnParcial);
 
     // 🧾 Texto com dados da promissória
-    // Formata a data para dd/mm/aaaa
+    // Formata data para dd/mm/aaaa
     const dataBR = p.data.split('-').reverse().join('/');
-  
-    // Aplica estilo vermelho no status "pendente"
-    const statusEstilo = p.status.toLowerCase() === 'pendente' ? ' style="color:red;"' : '';
 
-    const spanStatus = document.createElement("span");
-    spanStatus.innerHTML = `<span${statusEstilo}>${p.status}</span>`;
+    // Remove parênteses e espaços do telefone
+    const telefoneLimpo = p.telefone.replace(/[^\d\-]/g, '');
 
+    // Cria span com nome e telefone em negrito
+    const spanIdentificacao = document.createElement("span");
+    spanIdentificacao.style.fontWeight = "bold";
+    spanIdentificacao.textContent = `${p.nome} ${telefoneLimpo}`;
+
+    // Cria o restante da descrição da dívida
     const texto = document.createTextNode(
-    ` ${p.nome} (${p.telefone}) - R$${p.valorAtual} (original: R$${p.valor}) - ${dataBR} - `
+    ` - R$${p.valorAtual} (original: R$${p.valor}) - ${dataBR}`
     );
 
+    li.appendChild(spanIdentificacao);
     li.appendChild(texto);
-    li.appendChild(spanStatus);
 
+    // Adiciona observações (se existirem)
     if (p.observacoes) {
-    const obs = document.createTextNode(` - ${p.observacoes}`);
+    const obs = document.createTextNode(` - Obs.: ${p.observacoes}`);
     li.appendChild(obs);
     }
-
 
     li.appendChild(texto);
     lista.appendChild(li);
