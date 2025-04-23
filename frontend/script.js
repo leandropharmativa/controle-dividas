@@ -107,14 +107,15 @@ async function carregarPromissorias() {
     li.appendChild(btnQuitar);
     li.appendChild(btnParcial);
 
-    const spanNome = document.createElement("span");
-    spanNome.textContent = ` ${p.nome} (${p.telefone}) - R$${p.valorAtual} (original: R$${p.valor}) - ${p.data} - ${p.status}${p.observacoes ? ` - ${p.observacoes}` : ''}`;
-    spanNome.style.cursor = "pointer";
-    spanNome.style.textDecoration = "underline";
-    spanNome.style.color = "blue";
-    spanNome.onclick = () => mostrarPagamentos(p.id, li);
+    const texto = document.createTextNode(` ${p.nome} (${p.telefone}) - R$${p.valorAtual} (original: R$${p.valor}) - ${p.data} - ${p.status}${p.observacoes ? ` - ${p.observacoes}` : ''}`);
+    li.appendChild(texto);
+  
+    const btnPagamentos = document.createElement("button");
+    btnPagamentos.textContent = "💬";
+    btnPagamentos.title = "Ver histórico de pagamentos";
+    btnPagamentos.onclick = () => mostrarPagamentos(p.id, li);
+    li.appendChild(btnPagamentos);
 
-    li.appendChild(spanNome);
     lista.appendChild(li);
   });
 }
