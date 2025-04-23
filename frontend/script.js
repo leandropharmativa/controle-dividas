@@ -78,18 +78,20 @@ async function mostrarPagamentos(id, container) {
     li.textContent = "Nenhum pagamento registrado.";
     ul.appendChild(li);
   } else {
-    pagamentos.forEach(p => {
-      const li = document.createElement("li");
-      li.textContent = `→ R$${p.valor} - ${p.data}${p.observacao ? ` - ${p.observacao}` : ''}`;
-      ul.appendChild(li);
-    });
+  pagamentos.forEach(p => {
+  const dataBR = p.data.split('-').reverse().join('/');
+  const li = document.createElement("li");
+  li.textContent = `→ R$${p.valor} - ${dataBR}${p.observacao ? ` - ${p.observacao}` : ''}`;
+  ul.appendChild(li);
+  });
+
   }
 
   container.appendChild(ul);
-}
+  }
 
-// 🔄 Carrega e exibe todas as promissórias
-async function carregarPromissorias() {
+  // 🔄 Carrega e exibe todas as promissórias
+  async function carregarPromissorias() {
   lista.innerHTML = "Carregando...";
   const res = await fetch(API_URL);
   const promissorias = await res.json();
