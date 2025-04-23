@@ -44,14 +44,18 @@ app.get('/promissorias', async (req, res) => {
 
 // ➕ Criar nova promissória
 app.post('/promissorias', async (req, res) => {
-  const { id, nome, valor, data, status, observacoes } = req.body;
+  const { nome, telefone, valor, data, observacoes } = req.body;
+
+  const id = `${Date.now()}`; // gera um ID baseado no timestamp
+  const status = "pendente";
+
   const sheets = await getSheetsClient();
   await sheets.spreadsheets.values.append({
     spreadsheetId: SHEET_ID,
-    range: `${SHEET_TAB}!A:F`,
+    range: `${SHEET_TAB}!A:G`,
     valueInputOption: 'RAW',
     resource: {
-      values: [[id, nome, valor, data, status, observacoes]],
+      values: [[id, nome, telefone, valor, data, status, observacoes]],
     },
   });
   res.sendStatus(201);
