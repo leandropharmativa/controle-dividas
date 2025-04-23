@@ -1,12 +1,13 @@
 const express = require('express');
 const { google } = require('googleapis');
 const dotenv = require('dotenv');
-const fs = require('fs');
 const cors = require('cors');
+const fs = require('fs');
 
 dotenv.config();
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 const SHEET_ID = process.env.GOOGLE_SHEET_ID;
