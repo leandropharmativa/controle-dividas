@@ -88,4 +88,32 @@ async function carregarPromissorias() {
   });
 }
 
+async function mostrarPagamentos(id, container) {
+  const existe = container.querySelector('.pagamentos');
+  if (existe) {
+    existe.remove(); // esconde se já estiver aberto
+    return;
+  }
+
+  const res = await fetch(`https://controle-dividas.onrender.com/pagamentos/${id}`);
+  const pagamentos = await res.json();
+
+  const ul = document.createElement("ul");
+  ul.className = "pagamentos";
+
+  if (pagamentos.length === 0) {
+    const li = document.createElement("li");
+    li.textContent = "Nenhum pagamento registrado.";
+    ul.appendChild(li);
+  } else {
+    pagamentos.forEach(p => {
+      const li = document.createElement("li");
+      li.textContent = `→ R$${p.valor} - ${p.data}${p.observacao ? ` - ${p.observacao}` : ''}`;
+      ul.appendChild(li);
+    });
+  }
+
+  container.appendChild(ul);
+}
+
 carregarPromissorias();
