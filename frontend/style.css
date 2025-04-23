@@ -1,3 +1,5 @@
+/* 🌐 Estilo base (mobile-first) */
+
 body {
   font-family: sans-serif;
   background-color: #f9f9f9;
@@ -13,60 +15,18 @@ h1 {
 
 #form-promissoria {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 10px;
   margin-bottom: 2rem;
 }
 
 #form-promissoria input,
 #form-promissoria button {
-  padding: 0.5rem;
+  padding: 0.6rem;
   font-size: 1rem;
 }
 
-button {
-  border: none;
-  width: 36px;
-  height: 36px;
-  margin-right: 5px;
-  cursor: pointer;
-  border-radius: 4px;
-  font-weight: bold;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-button:hover {
-  opacity: 0.85;
-}
-
-button:nth-child(1) { background-color: #4caf50; color: white; } /* ✓ Quitar */
-button:nth-child(2) { background-color: #2196f3; color: white; } /* 💬 Pagamentos */
-button:nth-child(3) { background-color: #ff9800; color: white; } /* + Parcial */
-
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-li {
-  background-color: white;
-  margin-bottom: 1rem;
-  padding: 0.8rem;
-  border-radius: 6px;
-  box-shadow: 0 0 4px rgba(0,0,0,0.1);
-}
-
-.pagamentos {
-  margin-top: 0.5rem;
-  margin-left: 2rem;
-  font-size: 0.95rem;
-  color:
-}
-
+/* Botão "Adicionar" */
 .btn-adicionar {
   background-color: #4caf50;
   color: white;
@@ -84,3 +44,65 @@ li {
   background-color: #45a049;
 }
 
+/* Estilo dos botões da lista */
+li button {
+  border: none;
+  width: 36px;
+  height: 36px;
+  margin-right: 5px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cores específicas para os botões de ação */
+li button:nth-child(1) { background-color: #4caf50; color: white; } /* ✓ */
+li button:nth-child(2) { background-color: #2196f3; color: white; } /* 💬 */
+li button:nth-child(3) { background-color: #ff9800; color: white; } /* + */
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  background-color: white;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 6px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.1);
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pagamentos {
+  margin-top: 0.5rem;
+  margin-left: 1.2rem;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* 📱 Versão desktop responsiva */
+@media (min-width: 768px) {
+  #form-promissoria {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  li {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .pagamentos {
+    margin-left: 2rem;
+  }
+}
