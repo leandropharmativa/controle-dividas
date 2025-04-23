@@ -14,7 +14,7 @@ const SHEET_ID = process.env.GOOGLE_SHEET_ID;
 const SHEET_TAB = process.env.GOOGLE_SHEET_TAB;
 
 const auth = new google.auth.GoogleAuth({
-  keyFile: 'google-credentials.json',
+  keyFile: '../google-credentials.json',
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
 
@@ -23,10 +23,10 @@ async function getSheetsClient() {
   return google.sheets({ version: 'v4', auth: client });
 }
 
-// 🔎 Listar promissórias
+// 🔎 Listar promissórias (corrigido)
 app.get('/promissorias', async (req, res) => {
   const sheets = await getSheetsClient();
-  const range = `${SHEET_TAB}!A2:G`; // 7 colunas agora
+  const range = `${SHEET_TAB}!A2:G`; // 7 colunas: ID, Nome, Telefone, Valor, Data, Status, Observações
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId: SHEET_ID,
     range,
@@ -68,4 +68,8 @@ app.get('/', (req, res) => {
   res.json({ mensagem: "API Controle de Dívidas online" });
 });
 
-// 🚀 Inicia
+// 🚀 Inicia o servidor
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
+});
