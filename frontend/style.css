@@ -1,0 +1,62 @@
+body {
+  font-family: sans-serif;
+  background-color: #f9f9f9;
+  padding: 2rem;
+  color: #333;
+}
+
+h1 {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+}
+
+#form-promissoria {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 2rem;
+}
+
+#form-promissoria input,
+#form-promissoria button {
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+button {
+  border: none;
+  padding: 5px 10px;
+  margin-right: 5px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  opacity: 0.85;
+}
+
+button:nth-child(1) { background-color: #4caf50; color: white; } /* ✓ Quitar */
+button:nth-child(2) { background-color: #2196f3; color: white; } /* 💬 Pagamentos */
+button:nth-child(3) { background-color: #ff9800; color: white; } /* + Parcial */
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  background-color: white;
+  margin-bottom: 1rem;
+  padding: 0.8rem;
+  border-radius: 6px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.1);
+}
+
+.pagamentos {
+  margin-top: 0.5rem;
+  margin-left: 2rem;
+  font-size: 0.95rem;
+  color:
