@@ -33,15 +33,17 @@ app.get('/promissorias', async (req, res) => {
   });
   const rows = result.data.values || [];
 
-  res.json(rows.map(row => ({
-    id: row[0],
-    nome: row[1],
-    telefone: row[2],
-    valor: row[3],
-    data: row[4],
-    status: row[5],
-    observacoes: row[6],
-  })));
+const promissorias = rows.map(row => ({
+  id: row[0],
+  nome: row[1],
+  telefone: row[2],
+  valor: row[3],
+  data: row[4],
+  status: row[5],
+  observacoes: row[6],
+}));
+promissorias.sort((a, b) => a.nome.localeCompare(b.nome));
+res.json(promissorias); 
 });
 
 // ➕ Criar nova promissória
