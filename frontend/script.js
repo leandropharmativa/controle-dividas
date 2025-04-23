@@ -1,11 +1,15 @@
+// 🌐 Endpoints da API
 const API_URL = "https://controle-dividas.onrender.com/promissorias";
 const PAGAMENTO_URL = "https://controle-dividas.onrender.com/pagamentos";
 
+// 🎯 Referências ao DOM
 const form = document.getElementById("form-promissoria");
 const lista = document.getElementById("lista-promissorias");
 
+// 📌 Submete nova promissória
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+
   const nova = {
     nome: form.nome.value,
     telefone: form.telefone.value,
@@ -25,6 +29,7 @@ form.addEventListener("submit", async (e) => {
   carregarPromissorias();
 });
 
+// ✅ Marcar como quitada
 async function quitarPromissoria(id) {
   const confirmacao = confirm("Deseja realmente marcar como quitada?");
   if (!confirmacao) return;
@@ -32,9 +37,11 @@ async function quitarPromissoria(id) {
   await fetch(`${API_URL}/${id}/quitar`, {
     method: "PUT",
   });
+
   carregarPromissorias();
 }
 
+// 💰 Registrar pagamento parcial
 async function registrarPagamento(id, nome) {
   const valor = prompt("Informe o valor pago:");
   if (!valor) return;
@@ -49,12 +56,14 @@ async function registrarPagamento(id, nome) {
   });
 
   alert("Pagamento registrado com sucesso!");
+  carregarPromissorias();
 }
 
+// 🔎 Mostrar histórico de pagamentos de uma promissória
 async function mostrarPagamentos(id, container) {
   const existe = container.querySelector('.pagamentos');
   if (existe) {
-    existe.remove();
+    existe.remove(); // Oculta se já estiver aberto
     return;
   }
 
@@ -79,10 +88,13 @@ async function mostrarPagamentos(id, container) {
   container.appendChild(ul);
 }
 
+// 🔄 Carrega e exibe todas as promissórias
 async function carregarPromissorias() {
   lista.innerHTML = "Carregando...";
   const res = await fetch(API_URL);
   const promissorias = await res.json();
+
+  // 💵 Total geral das dívidas em aberto
   let total = 0;
   promissorias.forEach(p => {
     const valor = parseFloat(p.valorAtual);
@@ -91,33 +103,42 @@ async function carregarPromissorias() {
   document.getElementById("total-dividas").textContent = `R$${total.toFixed(2)}`;
   lista.innerHTML = "";
 
+  // 📝 Exibe cada promissória na tela
   promissorias.forEach(p => {
     const li = document.createElement("li");
 
+    // ✓ Botão para quitar
     const btnQuitar = document.createElement("button");
     btnQuitar.textContent = "✓";
     btnQuitar.title = "Marcar como quitada";
     btnQuitar.onclick = () => quitarPromissoria(p.id);
 
+    // 💬 Botão para visualizar pagamentos
+    const btnPagamentos = document.createElement("button");
+    btnPagamentos.textContent = "💬";
+    btnPagamentos.title = "Ver histórico de pagamentos";
+    btnPagamentos.onclick = () => mostrarPagamentos(p.id, li);
+
+    // ➕ Botão para registrar pagamento parcial
     const btnParcial = document.createElement("button");
     btnParcial.textContent = "+";
     btnParcial.title = "Registrar pagamento parcial";
     btnParcial.onclick = () => registrarPagamento(p.id, p.nome);
 
+    // ▶️ Ordem dos botões
     li.appendChild(btnQuitar);
+    li.appendChild(btnPagamentos);
     li.appendChild(btnParcial);
 
-    const texto = document.createTextNode(` ${p.nome} (${p.telefone}) - R$${p.valorAtual} (original: R$${p.valor}) - ${p.data} - ${p.status}${p.observacoes ? ` - ${p.observacoes}` : ''}`);
-    li.appendChild(texto);
-  
-    const btnPagamentos = document.createElement("button");
-    btnPagamentos.textContent = "💬";
-    btnPagamentos.title = "Ver histórico de pagamentos";
-    btnPagamentos.onclick = () => mostrarPagamentos(p.id, li);
-    li.appendChild(btnPagamentos);
+    // 🧾 Texto com dados da promissória
+    const texto = document.createTextNode(
+      ` ${p.nome} (${p.telefone}) - R$${p.valorAtual} (original: R$${p.valor}) - ${p.data} - ${p.status}${p.observacoes ? ` - ${p.observacoes}` : ''}`
+    );
 
+    li.appendChild(texto);
     lista.appendChild(li);
   });
 }
 
+// ▶️ Carrega ao iniciar
 carregarPromissorias();
