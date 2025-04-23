@@ -14,7 +14,7 @@ const SHEET_ID = process.env.GOOGLE_SHEET_ID;
 const SHEET_TAB = process.env.GOOGLE_SHEET_TAB;
 
 const auth = new google.auth.GoogleAuth({
-  keyFile: '../google-credentials.json',
+  keyFile: 'google-credentials.json',
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
 
