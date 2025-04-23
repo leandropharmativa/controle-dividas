@@ -54,8 +54,12 @@ app.post('/promissorias', async (req, res) => {
   });
   res.sendStatus(201);
 });
-
+// Rota raiz para teste
+app.get('/', (req, res) => {
+  res.json({ mensagem: "API Controle de Dívidas online" });
+});
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
+
