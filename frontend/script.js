@@ -55,6 +55,11 @@ async function carregarPromissorias() {
   lista.innerHTML = "Carregando...";
   const res = await fetch(API_URL);
   const promissorias = await res.json();
+  let total = 0;
+  promissorias.forEach(p => {
+  total += parseFloat(p.valorAtual);
+  });
+  document.getElementById("total-dividas").textContent = `R$${total.toFixed(2)}`;
   lista.innerHTML = "";
 
   promissorias.forEach(p => {
