@@ -148,6 +148,35 @@ app.post('/pagamentos', async (req, res) => {
   res.sendStatus(201);
 });
 
+// 🔍 Listar pagamentos por ID de promissória
+app.get('/pagamentos/:id', async (req, res) => {
+  const { id } = req.params;
+  const sheets = await getSheetsClient();
+  const range = `${PAGAMENTOS_TAB}!A2:E`;
+
+  try {
+    const result = await sheets.spreadsheets.values.get({
+      spreadsheetId: SHEET_ID,
+      range,
+    });
+
+    const rows = result.data.values || [];
+    const filtrados = rows
+      .filter(row => row[0] === id)
+      .map(row => ({
+        id: row[0],
+        nome: row[1],
+        valor: row[2],
+        data: row[3],
+        observacao: row[4],
+      }));
+
+    res.json(filtrados);
+  } catch (err) {
+    res.status(500).send("Erro ao buscar pagamentos");
+  }
+});
+
 // 🌐 Rota raiz
 app.get('/', (req, res) => {
   res.json({ mensagem: "API Controle de Dívidas online" });
