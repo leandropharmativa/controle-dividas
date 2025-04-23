@@ -130,37 +130,28 @@ async function carregarPromissorias() {
     li.appendChild(btnPagamentos);
     li.appendChild(btnParcial);
 
-    // 🧾 Texto com dados da promissória
-    // Formata data para dd/mm/aaaa
-    const dataBR = p.data.split('-').reverse().join('/');
+    // 🧾 Informações da dívida
+    const dataBR = p.data.split('-').reverse().join('/'); // DD/MM/AAAA
+    const telefoneLimpo = p.telefone.replace(/[^\d\-]/g, ''); // remove parênteses
 
-    // Remove parênteses e espaços do telefone
-    const telefoneLimpo = p.telefone.replace(/[^\d\-]/g, '');
-
-    // Cria span com nome e telefone em negrito
+    // Nome e telefone em negrito
     const spanIdentificacao = document.createElement("span");
     spanIdentificacao.style.fontWeight = "bold";
     spanIdentificacao.textContent = `${p.nome} ${telefoneLimpo}`;
-
-    // Cria o restante da descrição da dívida
-    const texto = document.createTextNode(
-    ` - R$${p.valorAtual} (original: R$${p.valor}) - ${dataBR}`
-    );
-
     li.appendChild(spanIdentificacao);
+
+    // Texto com valores e data
+    const texto = document.createTextNode(
+      ` - R$${p.valorAtual} (original: R$${p.valor}) - ${dataBR}`
+    );
     li.appendChild(texto);
 
-    const dataBR = p.data.split('-').reverse().join('/');
-    const textoFinal = document.createTextNode(` - ${dataBR}`);
-    li.appendChild(textoFinal);
-
+    // Observação ao final, se houver
     if (p.observacoes) {
-    const obs = document.createTextNode(` - Obs.: ${p.observacoes}`);
-    li.appendChild(obs);
+      const obs = document.createTextNode(` - Obs.: ${p.observacoes}`);
+      li.appendChild(obs);
     }
 
-
-    li.appendChild(texto);
     lista.appendChild(li);
   });
 }
