@@ -51,55 +51,14 @@ async function registrarPagamento(id, nome) {
   alert("Pagamento registrado com sucesso!");
 }
 
-async function carregarPromissorias() {
-  lista.innerHTML = "Carregando...";
-  const res = await fetch(API_URL);
-  const promissorias = await res.json();
-  let total = 0;
-  promissorias.forEach(p => {
-  total += parseFloat(p.valorAtual);
-  });
-  document.getElementById("total-dividas").textContent = `R$${total.toFixed(2)}`;
-  lista.innerHTML = "";
-
-  promissorias.forEach(p => {
-    const li = document.createElement("li");
-
-    const btnQuitar = document.createElement("button");
-    btnQuitar.textContent = "✓";
-    btnQuitar.title = "Marcar como quitada";
-    btnQuitar.onclick = () => quitarPromissoria(p.id);
-
-    const btnParcial = document.createElement("button");
-    btnParcial.textContent = "+";
-    btnParcial.title = "Registrar pagamento parcial";
-    btnParcial.onclick = () => registrarPagamento(p.id, p.nome);
-
-    li.appendChild(btnQuitar);
-    li.appendChild(btnParcial);
-
-    const texto = document.createTextNode(
-    ` ${p.nome} (${p.telefone}) - R$${p.valorAtual} (original: R$${p.valor}) - ${p.data} - ${p.status}${p.observacoes ? ` - ${p.observacoes}` : ''}`
-    );
-
-    li.appendChild(texto);
-    li.style.cursor = "pointer";
-    texto.style.textDecoration = "underline";
-    texto.style.color = "blue";
-    texto.onclick = () => mostrarPagamentos(p.id, li);
-
-    lista.appendChild(li);
-  });
-}
-
 async function mostrarPagamentos(id, container) {
   const existe = container.querySelector('.pagamentos');
   if (existe) {
-    existe.remove(); // esconde se já estiver aberto
+    existe.remove();
     return;
   }
 
-  const res = await fetch(`https://controle-dividas.onrender.com/pagamentos/${id}`);
+  const res = await fetch(`${PAGAMENTO_URL}/${id}`);
   const pagamentos = await res.json();
 
   const ul = document.createElement("ul");
@@ -118,6 +77,46 @@ async function mostrarPagamentos(id, container) {
   }
 
   container.appendChild(ul);
+}
+
+async function carregarPromissorias() {
+  lista.innerHTML = "Carregando...";
+  const res = await fetch(API_URL);
+  const promissorias = await res.json();
+  let total = 0;
+  promissorias.forEach(p => {
+    const valor = parseFloat(p.valorAtual);
+    if (!isNaN(valor)) total += valor;
+  });
+  document.getElementById("total-dividas").textContent = `R$${total.toFixed(2)}`;
+  lista.innerHTML = "";
+
+  promissorias.forEach(p => {
+    const li = document.createElement("li");
+
+    const btnQuitar = document.createElement("button");
+    btnQuitar.textContent = "✓";
+    btnQuitar.title = "Marcar como quitada";
+    btnQitar.onclick = () => quitarPromissoria(p.id);
+
+    const btnParcial = document.createElement("button");
+    btnParcial.textContent = "+";
+    btnParcial.title = "Registrar pagamento parcial";
+    btnParcial.onclick = () => registrarPagamento(p.id, p.nome);
+
+    li.appendChild(btnQuitar);
+    li.appendChild(btnParcial);
+
+    const spanNome = document.createElement("span");
+    spanNome.textContent = ` ${p.nome} (${p.telefone}) - R$${p.valorAtual} (original: R$${p.valor}) - ${p.data} - ${p.status}${p.observacoes ? ` - ${p.observacoes}` : ''}`;
+    spanNome.style.cursor = "pointer";
+    spanNome.style.textDecoration = "underline";
+    spanNome.style.color = "blue";
+    spanNome.onclick = () => mostrarPagamentos(p.id, li);
+
+    li.appendChild(spanNome);
+    lista.appendChild(li);
+  });
 }
 
 carregarPromissorias();
