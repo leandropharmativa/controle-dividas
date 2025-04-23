@@ -2,6 +2,7 @@ const express = require('express');
 const { google } = require('googleapis');
 const dotenv = require('dotenv');
 const fs = require('fs');
+const cors = require('cors');
 
 dotenv.config();
 
