@@ -74,8 +74,9 @@ async function carregarPromissorias() {
     li.appendChild(btnParcial);
 
     const texto = document.createTextNode(
-      ` ${p.nome} (${p.telefone}) - R$${p.valor} - ${p.data} - ${p.status}${p.observacoes ? ` - ${p.observacoes}` : ''}`
+    ` ${p.nome} (${p.telefone}) - R$${p.valorAtual} (original: R$${p.valor}) - ${p.data} - ${p.status}${p.observacoes ? ` - ${p.observacoes}` : ''}`
     );
+
     li.appendChild(texto);
 
     lista.appendChild(li);
