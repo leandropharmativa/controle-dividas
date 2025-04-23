@@ -146,3 +146,91 @@ app.put('/promissorias/:id/quitar', async (req, res) => {
 });
 
 // ➕ Registrar pagamento parcial
+app.post('/pagamentos', async (req, res) => {
+  const { id, nome, valor, data, observacao } = req.body;
+  const sheets = await getSheetsClient();
+
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: SHEET_ID,
+    range: `${PAGAMENTOS_TAB}!A:E`,
+    valueInputOption: 'RAW',
+    resource: {
+      values: [[id, nome, valor, data, observacao]],
+    },
+  });
+
+  res.sendStatus(201);
+});
+
+// 🔄 Adicionar valor a uma dívida existente
+app.put('/promissorias/:id/adicionar', async (req, res) => {
+  const { id } = req.params;
+  const { valorAdicional } = req.body;
+
+  const sheets = await getSheetsClient();
+  const range = `${SHEET_TAB}!A2:G`;
+  const result = await sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range,
+  });
+
+  const rows = result.data.values || [];
+  const rowIndex = rows.findIndex(row => row[0] === id);
+  if (rowIndex === -1) return res.status(404).send('Promissória não encontrada');
+
+  const valorAtual = parseFloat(rows[rowIndex][3]) || 0;
+  const novoValor = valorAtual + parseFloat(valorAdicional);
+
+  rows[rowIndex][3] = novoValor.toFixed(2);
+
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: SHEET_ID,
+    range: `${SHEET_TAB}!A${rowIndex + 2}:G${rowIndex + 2}`,
+    valueInputOption: 'RAW',
+    resource: {
+      values: [rows[rowIndex]],
+    },
+  });
+
+  res.sendStatus(200);
+});
+
+// 📜 Histórico de pagamentos por ID
+app.get('/pagamentos/:id', async (req, res) => {
+  const { id } = req.params;
+  const sheets = await getSheetsClient();
+  const range = `${PAGAMENTOS_TAB}!A2:E`;
+
+  try {
+    const result = await sheets.spreadsheets.values.get({
+      spreadsheetId: SHEET_ID,
+      range,
+    });
+
+    const rows = result.data.values || [];
+    const filtrados = rows
+      .filter(row => row[0] === id)
+      .map(row => ({
+        id: row[0],
+        nome: row[1],
+        valor: row[2],
+        data: row[3],
+        observacao: row[4],
+      }));
+
+    res.json(filtrados);
+  } catch (err) {
+    res.status(500).send("Erro ao buscar pagamentos");
+  }
+});
+
+// 🌐 Rota principal
+app.get('/', (req, res) => {
+  res.json({ mensagem: "API Controle de Dívidas online" });
+});
+
+// 🚀 Inicia servidor
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
+});
