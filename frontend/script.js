@@ -34,7 +34,7 @@ async function carregarPromissorias() {
 
   promissorias.forEach(p => {
     const li = document.createElement("li");
-    li.textContent = `${p.nome} (${p.telefone}) - R$${p.valor} - ${p.data} - ${p.status}`;
+    li.textContent = `${p.nome} (${p.telefone}) - R$${p.valor} - ${p.data} - ${p.status}${p.observacoes ? ` - ${p.observacoes}` : ''}`;
     lista.appendChild(li);
   });
 }
