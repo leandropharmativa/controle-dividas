@@ -24,20 +24,17 @@ async function getSheetsClient() {
   return google.sheets({ version: 'v4', auth: client });
 }
 
-// 🔍 Listar promissórias (somente status diferente de "paga")
 app.get('/promissorias', async (req, res) => {
   const sheets = await getSheetsClient();
-
-  // 1. Carrega promissórias
   const promissoriasRange = `${SHEET_TAB}!A2:G`;
+  const pagamentosRange = `${PAGAMENTOS_TAB}!A2:E`;
+
   const promissoriasResult = await sheets.spreadsheets.values.get({
     spreadsheetId: SHEET_ID,
     range: promissoriasRange,
   });
   const promissoriasRows = promissoriasResult.data.values || [];
 
-  // 2. Carrega pagamentos
-  const pagamentosRange = `${PAGAMENTOS_TAB}!A2:E`;
   let pagamentosRows = [];
   try {
     const pagamentosResult = await sheets.spreadsheets.values.get({
@@ -46,11 +43,9 @@ app.get('/promissorias', async (req, res) => {
     });
     pagamentosRows = pagamentosResult.data.values || [];
   } catch (err) {
-    // Aba de pagamentos pode ainda não existir
-    console.log("Nenhum pagamento parcial registrado ainda.");
+    console.log("Nenhum pagamento registrado ainda.");
   }
 
-  // 3. Soma os valores pagos por ID
   const pagosPorId = {};
   pagamentosRows.forEach(row => {
     const id = row[0];
@@ -59,7 +54,6 @@ app.get('/promissorias', async (req, res) => {
     pagosPorId[id] += isNaN(valor) ? 0 : valor;
   });
 
-  // 4. Monta promissórias com valor abatido
   const promissorias = promissoriasRows.map(row => {
     const id = row[0];
     const valorOriginal = parseFloat(row[3]);
@@ -80,14 +74,11 @@ app.get('/promissorias', async (req, res) => {
   }).filter(p => p.status.toLowerCase() !== "paga");
 
   promissorias.sort((a, b) => a.nome.localeCompare(b.nome));
-
   res.json(promissorias);
 });
 
-// ➕ Criar nova promissória
 app.post('/promissorias', async (req, res) => {
   const { nome, telefone, valor, data, observacoes } = req.body;
-
   const id = `${Date.now()}`;
   const status = "pendente";
 
@@ -103,7 +94,6 @@ app.post('/promissorias', async (req, res) => {
   res.sendStatus(201);
 });
 
-// ✅ Marcar como quitada
 app.put('/promissorias/:id/quitar', async (req, res) => {
   const { id } = req.params;
   const sheets = await getSheetsClient();
@@ -115,10 +105,9 @@ app.put('/promissorias/:id/quitar', async (req, res) => {
 
   const rows = result.data.values || [];
   const rowIndex = rows.findIndex(row => row[0] === id);
-
   if (rowIndex === -1) return res.status(404).send('Promissória não encontrada');
 
-  rows[rowIndex][5] = "paga"; // coluna F = status
+  rows[rowIndex][5] = "paga";
 
   await sheets.spreadsheets.values.update({
     spreadsheetId: SHEET_ID,
@@ -132,10 +121,8 @@ app.put('/promissorias/:id/quitar', async (req, res) => {
   res.sendStatus(200);
 });
 
-// ➕ Registrar pagamento parcial
 app.post('/pagamentos', async (req, res) => {
   const { id, nome, valor, data, observacao } = req.body;
-
   const sheets = await getSheetsClient();
   await sheets.spreadsheets.values.append({
     spreadsheetId: SHEET_ID,
@@ -148,7 +135,6 @@ app.post('/pagamentos', async (req, res) => {
   res.sendStatus(201);
 });
 
-// 🔍 Listar pagamentos por ID de promissória
 app.get('/pagamentos/:id', async (req, res) => {
   const { id } = req.params;
   const sheets = await getSheetsClient();
@@ -177,7 +163,6 @@ app.get('/pagamentos/:id', async (req, res) => {
   }
 });
 
-// 🌐 Rota raiz
 app.get('/', (req, res) => {
   res.json({ mensagem: "API Controle de Dívidas online" });
 });
