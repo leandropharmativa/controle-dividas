@@ -26,19 +26,21 @@ async function getSheetsClient() {
 // 🔎 Listar promissórias
 app.get('/promissorias', async (req, res) => {
   const sheets = await getSheetsClient();
-  const range = `${SHEET_TAB}!A2:F`;
+  const range = `${SHEET_TAB}!A2:G`; // 7 colunas agora
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId: SHEET_ID,
     range,
   });
   const rows = result.data.values || [];
+
   res.json(rows.map(row => ({
     id: row[0],
     nome: row[1],
-    valor: row[2],
-    data: row[3],
-    status: row[4],
-    observacoes: row[5],
+    telefone: row[2],
+    valor: row[3],
+    data: row[4],
+    status: row[5],
+    observacoes: row[6],
   })));
 });
 
@@ -46,7 +48,7 @@ app.get('/promissorias', async (req, res) => {
 app.post('/promissorias', async (req, res) => {
   const { nome, telefone, valor, data, observacoes } = req.body;
 
-  const id = `${Date.now()}`; // gera um ID baseado no timestamp
+  const id = `${Date.now()}`; // ID único baseado em timestamp
   const status = "pendente";
 
   const sheets = await getSheetsClient();
@@ -60,15 +62,10 @@ app.post('/promissorias', async (req, res) => {
   });
   res.sendStatus(201);
 });
-// Rota raiz para teste
-app.get('/', (req, res) => {
-  res.json({ mensagem: "API Controle de Dívidas online" });
-});
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
-});
+
+// 🌐 Rota raiz para teste
 app.get('/', (req, res) => {
   res.json({ mensagem: "API Controle de Dívidas online" });
 });
 
+// 🚀 Inicia
