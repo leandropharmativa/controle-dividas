@@ -83,6 +83,10 @@ async function carregarPromissorias() {
     );
 
     li.appendChild(texto);
+    li.style.cursor = "pointer";
+    texto.style.textDecoration = "underline";
+    texto.style.color = "blue";
+    texto.onclick = () => mostrarPagamentos(p.id, li);
 
     lista.appendChild(li);
   });
