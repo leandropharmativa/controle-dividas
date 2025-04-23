@@ -87,7 +87,8 @@ li button:nth-child(3) { background-color: #ff9800; color: white; } /* + Parcial
 /* 🧾 Pagamentos parciais (histórico) */
 .pagamentos {
   margin-top: 0.5rem;
-  margin-left: 2.2rem;
   font-size: 0.95rem;
   color: #555;
+  flex-basis: 100%;  /* 🆕 força quebra para nova linha */
 }
+
