@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Controle de Dívidas</title>
+</head>
+<body>
+  <h1>Controle de Promissórias</h1>
+
+  <form id="form-promissoria">
+    <input type="text" id="id" placeholder="ID" required />
+    <input type="text" id="nome" placeholder="Nome" required />
+    <input type="number" id="valor" placeholder="Valor" required />
+    <input type="date" id="data" required />
+    <input type="text" id="status" placeholder="Status" required />
+    <input type="text" id="observacoes" placeholder="Observações" />
+    <button type="submit">Adicionar</button>
+  </form>
+
+  <h2>Lista de promissórias</h2>
+  <ul id="lista-promissorias"></ul>
+
+  <script src="script.js"></script>
+</body>
+</html>
