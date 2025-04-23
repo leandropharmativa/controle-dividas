@@ -1,4 +1,4 @@
-const API_URL = "https://SEU-BACKEND.onrender.com/promissorias"; // substitua pelo seu endpoint
+const API_URL = "https://controle-dividas.onrender.com/promissorias"; // substitua pelo seu endpoint
 
 const form = document.getElementById("form-promissoria");
 const lista = document.getElementById("lista-promissorias");
