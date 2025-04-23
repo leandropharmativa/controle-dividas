@@ -27,24 +27,60 @@ async function getSheetsClient() {
 // 🔍 Listar promissórias (somente status diferente de "paga")
 app.get('/promissorias', async (req, res) => {
   const sheets = await getSheetsClient();
-  const range = `${SHEET_TAB}!A2:G`;
-  const result = await sheets.spreadsheets.values.get({
-    spreadsheetId: SHEET_ID,
-    range,
-  });
-  const rows = result.data.values || [];
 
-  const promissorias = rows.map(row => ({
-    id: row[0],
-    nome: row[1],
-    telefone: row[2],
-    valor: row[3],
-    data: row[4],
-    status: row[5],
-    observacoes: row[6],
-  })).filter(p => p.status.toLowerCase() !== "paga");
+  // 1. Carrega promissórias
+  const promissoriasRange = `${SHEET_TAB}!A2:G`;
+  const promissoriasResult = await sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range: promissoriasRange,
+  });
+  const promissoriasRows = promissoriasResult.data.values || [];
+
+  // 2. Carrega pagamentos
+  const pagamentosRange = `${PAGAMENTOS_TAB}!A2:E`;
+  let pagamentosRows = [];
+  try {
+    const pagamentosResult = await sheets.spreadsheets.values.get({
+      spreadsheetId: SHEET_ID,
+      range: pagamentosRange,
+    });
+    pagamentosRows = pagamentosResult.data.values || [];
+  } catch (err) {
+    // Aba de pagamentos pode ainda não existir
+    console.log("Nenhum pagamento parcial registrado ainda.");
+  }
+
+  // 3. Soma os valores pagos por ID
+  const pagosPorId = {};
+  pagamentosRows.forEach(row => {
+    const id = row[0];
+    const valor = parseFloat(row[2]);
+    if (!pagosPorId[id]) pagosPorId[id] = 0;
+    pagosPorId[id] += isNaN(valor) ? 0 : valor;
+  });
+
+  // 4. Monta promissórias com valor abatido
+  const promissorias = promissoriasRows.map(row => {
+    const id = row[0];
+    const valorOriginal = parseFloat(row[3]);
+    const valorPago = pagosPorId[id] || 0;
+    const valorAtual = Math.max(0, valorOriginal - valorPago);
+
+    return {
+      id,
+      nome: row[1],
+      telefone: row[2],
+      valor: valorOriginal.toFixed(2),
+      valorPago: valorPago.toFixed(2),
+      valorAtual: valorAtual.toFixed(2),
+      data: row[4],
+      status: row[5],
+      observacoes: row[6],
+    };
+  }).filter(p => p.status.toLowerCase() !== "paga");
 
   promissorias.sort((a, b) => a.nome.localeCompare(b.nome));
+
   res.json(promissorias);
 });
 
