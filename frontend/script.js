@@ -131,9 +131,27 @@ async function carregarPromissorias() {
     li.appendChild(btnParcial);
 
     // 🧾 Texto com dados da promissória
+    // Formata a data para dd/mm/aaaa
+    const dataBR = p.data.split('-').reverse().join('/');
+  
+    // Aplica estilo vermelho no status "pendente"
+    const statusEstilo = p.status.toLowerCase() === 'pendente' ? ' style="color:red;"' : '';
+
+    const spanStatus = document.createElement("span");
+    spanStatus.innerHTML = `<span${statusEstilo}>${p.status}</span>`;
+
     const texto = document.createTextNode(
-      ` ${p.nome} (${p.telefone}) - R$${p.valorAtual} (original: R$${p.valor}) - ${p.data} - ${p.status}${p.observacoes ? ` - ${p.observacoes}` : ''}`
+    ` ${p.nome} (${p.telefone}) - R$${p.valorAtual} (original: R$${p.valor}) - ${dataBR} - `
     );
+
+    li.appendChild(texto);
+    li.appendChild(spanStatus);
+
+    if (p.observacoes) {
+    const obs = document.createTextNode(` - ${p.observacoes}`);
+    li.appendChild(obs);
+    }
+
 
     li.appendChild(texto);
     lista.appendChild(li);
