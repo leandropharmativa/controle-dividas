@@ -97,7 +97,7 @@ async function carregarPromissorias() {
     const btnQuitar = document.createElement("button");
     btnQuitar.textContent = "✓";
     btnQuitar.title = "Marcar como quitada";
-    btnQitar.onclick = () => quitarPromissoria(p.id);
+    btnQuitar.onclick = () => quitarPromissoria(p.id);
 
     const btnParcial = document.createElement("button");
     btnParcial.textContent = "+";
