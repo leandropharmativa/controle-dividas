@@ -284,10 +284,37 @@ app.get('/adicoes/:id', async (req, res) => {
   }
 });
 
+// 👁 Listar promissórias pagas
+app.get('/promissorias/pagas', async (req, res) => {
+  const sheets = await getSheetsClient();
+  const range = `${SHEET_TAB}!A2:G`;
+  const result = await sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range,
+  });
+
+  const rows = result.data.values || [];
+
+  const pagas = rows
+    .filter(row => row[5]?.toLowerCase() === 'paga')
+    .map(row => ({
+      id: row[0],
+      nome: row[1],
+      telefone: row[2],
+      valor: parseFloat(row[3]).toFixed(2),
+      data: row[4],
+      status: row[5],
+      observacoes: row[6],
+    }));
+
+  res.json(pagas);
+});
+
 // 🌐 Status da API
 app.get('/', (req, res) => {
   res.json({ mensagem: "API Controle de Dívidas online" });
 });
+
 
 // 🚀 Iniciar servidor
 const PORT = process.env.PORT || 3000;
