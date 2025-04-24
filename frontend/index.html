@@ -3,24 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Controle de Dívidas</title>
+  <title>Controle de Promissórias</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Controle de Promissórias - <span id="total-dividas">R$0,00</span></h1>
 
+  <h1>Controle de Promissórias</h1>
+  <h2>Lista de promissórias ativas</h2>
+  <p>Total de dívidas: <strong id="total-dividas">R$0,00</strong></p>
+
+  <!-- 🎯 Filtros -->
+  <div id="filtros" style="margin-bottom: 1rem;">
+    <input type="text" id="filtro-nome" placeholder="🔍 Nome" />
+    <input type="text" id="filtro-data" placeholder="📅 Data (AAAA-MM-DD)" />
+    <input type="number" id="filtro-valor" placeholder="💲 Valor mínimo" />
+    <button id="btn-filtrar">Filtrar</button>
+  </div>
+
+  <!-- 📋 Formulário -->
   <form id="form-promissoria">
-    <input type="text" id="nome" placeholder="Nome" required />
-    <input type="text" id="telefone" placeholder="Telefone" required />
-    <input type="number" id="valor" placeholder="Valor" required />
-    <input type="date" id="data" required />
-    <input type="text" id="observacoes" placeholder="Observações" />
+    <input name="nome" placeholder="Nome" required />
+    <input name="telefone" placeholder="Telefone" required />
+    <input name="valor" placeholder="Valor" type="number" required />
+    <input name="data" placeholder="Data (AAAA-MM-DD)" type="date" required />
+    <input name="observacoes" placeholder="Observações" />
     <button type="submit" class="btn-adicionar">Adicionar</button>
   </form>
 
-  <h2>Lista de promissórias ativas</h2>
+  <!-- 📌 Lista de promissórias ativas -->
   <ul id="lista-promissorias"></ul>
 
+  <!-- 👁 Botão + Lista de promissórias pagas será inserido via JS -->
+
+  <!-- 🔧 Scripts -->
   <script src="script.js"></script>
 </body>
 </html>
