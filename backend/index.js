@@ -118,6 +118,7 @@ app.post('/promissorias', async (req, res) => {
 app.put('/promissorias/:id/quitar', async (req, res) => {
   const { id } = req.params;
   const sheets = await getSheetsClient();
+
   const range = `${SHEET_TAB}!A2:G`;
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId: SHEET_ID,
@@ -128,14 +129,42 @@ app.put('/promissorias/:id/quitar', async (req, res) => {
   const rowIndex = rows.findIndex(row => row[0] === id);
   if (rowIndex === -1) return res.status(404).send('Promissória não encontrada');
 
-  rows[rowIndex][5] = "paga";
+  const [_, nome, telefone, valorOriginal, data, status, observacoes] = rows[rowIndex];
 
+  // Soma pagamentos já realizados
+  const pagamentosRes = await sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range: `${PAGAMENTOS_TAB}!A2:E`,
+  });
+  const pagamentos = pagamentosRes.data.values || [];
+  const totalPago = pagamentos
+    .filter(p => p[0] === id)
+    .reduce((acc, p) => acc + parseFloat(p[2] || 0), 0);
+
+  const valorOriginalFloat = parseFloat(valorOriginal);
+  const restante = Math.max(0, valorOriginalFloat - totalPago);
+
+  // Atualiza status para "paga"
+  rows[rowIndex][5] = "paga";
   await sheets.spreadsheets.values.update({
     spreadsheetId: SHEET_ID,
     range: `${SHEET_TAB}!A${rowIndex + 2}:G${rowIndex + 2}`,
     valueInputOption: 'RAW',
     resource: { values: [rows[rowIndex]] },
   });
+
+  // Registra o restante como pagamento
+  if (restante > 0) {
+    const hoje = new Date().toISOString().split('T')[0];
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: SHEET_ID,
+      range: `${PAGAMENTOS_TAB}!A:E`,
+      valueInputOption: 'RAW',
+      resource: {
+        values: [[id, nome, restante.toFixed(2), hoje, "Quitação manual"]],
+      },
+    });
+  }
 
   res.sendStatus(200);
 });
