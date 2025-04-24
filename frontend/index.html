@@ -12,12 +12,9 @@
   <h2>Lista de promissórias ativas</h2>
   <p>Total de dívidas: <strong id="total-dividas">R$0,00</strong></p>
 
-  <!-- 🎯 Filtros -->
+  <!-- 🔍 Campo de pesquisa por nome -->
   <div id="filtros" style="margin-bottom: 1rem;">
-    <input type="text" id="filtro-nome" placeholder="🔍 Nome" />
-    <input type="text" id="filtro-data" placeholder="📅 Data (AAAA-MM-DD)" />
-    <input type="number" id="filtro-valor" placeholder="💲 Valor mínimo" />
-    <button id="btn-filtrar">Filtrar</button>
+    <input type="text" id="filtro-nome" placeholder="🔍 Buscar nome..." />
   </div>
 
   <!-- 📋 Formulário -->
@@ -33,9 +30,9 @@
   <!-- 📌 Lista de promissórias ativas -->
   <ul id="lista-promissorias"></ul>
 
-  <!-- 👁 Botão + Lista de promissórias pagas será inserido via JS -->
+  <!-- 📜 Lista de promissórias pagas -->
+  <div id="lista-pagas"></div>
 
-  <!-- 🔧 Scripts -->
   <script src="script.js"></script>
 </body>
 </html>
