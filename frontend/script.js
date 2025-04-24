@@ -1,11 +1,10 @@
-// 🌐 Endpoints da API
 const API_URL = "https://controle-dividas.onrender.com/promissorias";
 const PAGAMENTO_URL = "https://controle-dividas.onrender.com/pagamentos";
 const ADICAO_URL = "https://controle-dividas.onrender.com/adicoes";
 
-// 🎯 DOM
 const form = document.getElementById("form-promissoria");
 const lista = document.getElementById("lista-promissorias");
+const pagasDiv = document.getElementById("lista-pagas");
 
 // ➕ Criar nova promissória
 form.addEventListener("submit", async (e) => {
@@ -26,14 +25,14 @@ form.addEventListener("submit", async (e) => {
   });
 
   form.reset();
-  carregarPromissorias();
+  carregarListas();
 });
 
 // ✅ Marcar como quitada
 async function quitarPromissoria(id) {
   if (!confirm("Deseja realmente marcar como quitada?")) return;
   await fetch(`${API_URL}/${id}/quitar`, { method: "PUT" });
-  carregarPromissorias();
+  carregarListas();
 }
 
 // ➖ Registrar pagamento parcial
@@ -50,10 +49,10 @@ async function registrarPagamento(id, nome) {
   });
 
   alert("Pagamento registrado com sucesso!");
-  carregarPromissorias();
+  carregarListas();
 }
 
-// 💸 Adicionar valor à dívida
+// 💸 Adicionar valor
 async function adicionarValor(id, nome) {
   const valor = prompt("Informe o valor adicional:");
   if (!valor || isNaN(valor)) return;
@@ -66,10 +65,10 @@ async function adicionarValor(id, nome) {
   });
 
   alert("Valor adicionado com sucesso!");
-  carregarPromissorias();
+  carregarListas();
 }
 
-// 📜 Histórico de pagamentos e adições
+// 📜 Mostrar histórico
 async function mostrarPagamentos(id, container) {
   const existe = container.querySelector(".pagamentos");
   if (existe) {
@@ -125,149 +124,100 @@ async function mostrarPagamentos(id, container) {
   container.appendChild(ul);
 }
 
-// 🔄 Carrega promissórias ativas com filtros aplicados
-async function carregarPromissorias() {
-  lista.innerHTML = "Carregando...";
-  const res = await fetch(API_URL);
-  const promissorias = await res.json();
+// 🔄 Carrega e renderiza promissórias ativas e pagas com base no nome buscado
+async function carregarListas() {
+  const filtroNome = document.getElementById("filtro-nome").value.toLowerCase();
 
-  // 🎯 Aplicar filtros
-  const nomeFiltro = document.getElementById("filtro-nome").value.toLowerCase();
-  const dataFiltro = document.getElementById("filtro-data").value;
-  const valorMin = parseFloat(document.getElementById("filtro-valor").value) || 0;
+  const [resAtivas, resPagas] = await Promise.all([
+    fetch(API_URL),
+    fetch(`${API_URL}/pagas`)
+  ]);
 
-  const filtradas = promissorias.filter((p) => {
-    const nomeMatch = p.nome.toLowerCase().includes(nomeFiltro);
-    const dataMatch = !dataFiltro || p.data.startsWith(dataFiltro);
-    const valorMatch = parseFloat(p.valorAtual) >= valorMin;
-    return nomeMatch && dataMatch && valorMatch;
-  });
+  const ativas = await resAtivas.json();
+  const pagas = await resPagas.json();
 
   let total = 0;
-  filtradas.forEach((p) => {
-    const valor = parseFloat(p.valorAtual);
-    if (!isNaN(valor)) total += valor;
-  });
-
-  document.getElementById("total-dividas").textContent = `R$${total.toFixed(2)}`;
   lista.innerHTML = "";
 
-  filtradas.forEach((p) => {
-    const li = document.createElement("li");
+  // Ativas
+  ativas
+    .filter(p => p.nome.toLowerCase().includes(filtroNome))
+    .forEach(p => {
+      const li = renderPromissoria(p, true);
+      lista.appendChild(li);
+      total += parseFloat(p.valorAtual);
+    });
 
-    const btnQuitar = document.createElement("button");
-    btnQuitar.textContent = "✓";
-    btnQuitar.title = "Marcar como quitada";
-    btnQuitar.onclick = () => quitarPromissoria(p.id);
+  document.getElementById("total-dividas").textContent = `R$${total.toFixed(2)}`;
 
-    const btnPagamentos = document.createElement("button");
-    btnPagamentos.textContent = "🧾";
-    btnPagamentos.title = "Ver histórico";
-    btnPagamentos.onclick = () => mostrarPagamentos(p.id, li);
+  // Pagas
+  pagasDiv.innerHTML = "";
+  const filtradasPagas = pagas.filter(p => p.nome.toLowerCase().includes(filtroNome));
 
-    const btnParcial = document.createElement("button");
-    btnParcial.textContent = "-";
-    btnParcial.title = "Registrar pagamento parcial";
-    btnParcial.onclick = () => registrarPagamento(p.id, p.nome);
+  if (filtroNome && filtradasPagas.length > 0) {
+    pagasDiv.innerHTML = "<h3>✓ Promissórias Pagas</h3>";
+    const ul = document.createElement("ul");
+    filtradasPagas.forEach(p => {
+      const dataBR = p.data.split('-').reverse().join('/');
+      const telefone = p.telefone.replace(/[^\d\-]/g, '');
+      const obs = p.observacoes ? ` - Obs.: ${p.observacoes}` : "";
 
-    const btnAdicionar = document.createElement("button");
-    btnAdicionar.textContent = "+💸";
-    btnAdicionar.title = "Adicionar valor à dívida";
-    btnAdicionar.onclick = () => adicionarValor(p.id, p.nome);
-
-    li.appendChild(btnQuitar);
-    li.appendChild(btnPagamentos);
-    li.appendChild(btnParcial);
-    li.appendChild(btnAdicionar);
-
-    const dataBR = p.data.split("-").reverse().join("/");
-    const telefone = p.telefone.replace(/[^\d\-]/g, "");
-    const spanNome = document.createElement("span");
-    spanNome.style.fontWeight = "bold";
-    spanNome.textContent = `${p.nome} ${telefone}`;
-    li.appendChild(spanNome);
-
-    const texto = document.createTextNode(` - R$${p.valorAtual} (original: R$${p.valor}) - ${dataBR}`);
-    li.appendChild(texto);
-
-    if (p.observacoes) {
-      const obs = document.createTextNode(` - Obs.: ${p.observacoes}`);
-      li.appendChild(obs);
-    }
-
-    lista.appendChild(li);
-  });
+      const li = document.createElement("li");
+      li.style.color = "#777";
+      li.textContent = `✓ ${p.nome} ${telefone} - R$${p.valor} - ${dataBR}${obs}`;
+      ul.appendChild(li);
+    });
+    pagasDiv.appendChild(ul);
+  }
 }
 
-// 👁 Mostra/oculta promissórias pagas com filtro
-function criarBotaoMostrarPagas() {
-  const container = document.createElement("div");
-  container.style.textAlign = "center";
-  container.style.marginTop = "2rem";
+// 🔧 Renderiza uma promissória ativa
+function renderPromissoria(p, ativa = true) {
+  const li = document.createElement("li");
 
-  const btn = document.createElement("button");
-  btn.textContent = "👁 Mostrar promissórias pagas";
-  btn.style.padding = "8px 16px";
-  btn.style.border = "none";
-  btn.style.borderRadius = "6px";
-  btn.style.background = "#ccc";
-  btn.style.cursor = "pointer";
-  btn.style.fontWeight = "bold";
+  const btnQuitar = document.createElement("button");
+  btnQuitar.textContent = "✓";
+  btnQuitar.title = "Marcar como quitada";
+  btnQuitar.onclick = () => quitarPromissoria(p.id);
 
-  const divPagas = document.createElement("div");
-  divPagas.id = "lista-pagas";
-  divPagas.style.marginTop = "1rem";
+  const btnPagamentos = document.createElement("button");
+  btnPagamentos.textContent = "🧾";
+  btnPagamentos.title = "Ver histórico";
+  btnPagamentos.onclick = () => mostrarPagamentos(p.id, li);
 
-  let visivel = false;
+  const btnParcial = document.createElement("button");
+  btnParcial.textContent = "-";
+  btnParcial.title = "Registrar pagamento parcial";
+  btnParcial.onclick = () => registrarPagamento(p.id, p.nome);
 
-  btn.onclick = async () => {
-    if (visivel) {
-      divPagas.innerHTML = "";
-      btn.textContent = "👁 Mostrar promissórias pagas";
-      visivel = false;
-    } else {
-      const res = await fetch(`${API_URL}/pagas`);
-      let pagas = await res.json();
+  const btnAdicionar = document.createElement("button");
+  btnAdicionar.textContent = "+💸";
+  btnAdicionar.title = "Adicionar valor à dívida";
+  btnAdicionar.onclick = () => adicionarValor(p.id, p.nome);
 
-      // 🧠 Aplicar mesmo filtro da lista ativa
-      const nomeFiltro = document.getElementById("filtro-nome").value.toLowerCase();
-      const dataFiltro = document.getElementById("filtro-data").value;
-      const valorMin = parseFloat(document.getElementById("filtro-valor").value) || 0;
+  li.appendChild(btnQuitar);
+  li.appendChild(btnPagamentos);
+  li.appendChild(btnParcial);
+  li.appendChild(btnAdicionar);
 
-      pagas = pagas.filter(p => 
-        p.nome.toLowerCase().includes(nomeFiltro) &&
-        (!dataFiltro || p.data.startsWith(dataFiltro)) &&
-        parseFloat(p.valor) >= valorMin
-      );
+  const dataBR = p.data.split("-").reverse().join("/");
+  const telefone = p.telefone.replace(/[^\d\-]/g, "");
+  const spanNome = document.createElement("span");
+  spanNome.style.fontWeight = "bold";
+  spanNome.textContent = `${p.nome} ${telefone}`;
+  li.appendChild(spanNome);
 
-      divPagas.innerHTML = "<h3>✓ Promissórias Pagas</h3>";
-      if (pagas.length === 0) {
-        divPagas.innerHTML += "<p>Nenhuma promissória paga registrada.</p>";
-      } else {
-        const ul = document.createElement("ul");
-        pagas.forEach(p => {
-          const li = document.createElement("li");
-          li.style.color = "#777";
-          const dataBR = p.data.split('-').reverse().join('/');
-          const telefone = p.telefone.replace(/[^\d\-]/g, '');
-          const obs = p.observacoes ? ` - Obs.: ${p.observacoes}` : "";
-          li.textContent = `✓ ${p.nome} ${telefone} - R$${p.valor} - ${dataBR}${obs}`;
-          ul.appendChild(li);
-        });
-        divPagas.appendChild(ul);
-      }
+  const texto = document.createTextNode(` - R$${p.valorAtual} (original: R$${p.valor}) - ${dataBR}`);
+  li.appendChild(texto);
 
-      btn.textContent = "👁 Ocultar promissórias pagas";
-      visivel = true;
-    }
-  };
+  if (p.observacoes) {
+    const obs = document.createTextNode(` - Obs.: ${p.observacoes}`);
+    li.appendChild(obs);
+  }
 
-  container.appendChild(btn);
-  container.appendChild(divPagas);
-  document.body.appendChild(container);
+  return li;
 }
 
 // ▶️ Inicializa
-carregarPromissorias();
-criarBotaoMostrarPagas();
-document.getElementById("btn-filtrar").addEventListener("click", carregarPromissorias);
+carregarListas();
+document.getElementById("filtro-nome").addEventListener("input", carregarListas);
