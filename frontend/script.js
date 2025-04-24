@@ -131,6 +131,65 @@ async function mostrarPagamentos(id, container) {
   container.appendChild(ul);
 }
 
+// 👁 Adiciona botão para mostrar promissórias pagas
+function criarBotaoMostrarPagas() {
+  const container = document.createElement("div");
+  container.style.textAlign = "center";
+  container.style.marginTop = "2rem";
+
+  const btn = document.createElement("button");
+  btn.textContent = "👁 Mostrar promissórias pagas";
+  btn.style.padding = "8px 16px";
+  btn.style.border = "none";
+  btn.style.borderRadius = "6px";
+  btn.style.background = "#ccc";
+  btn.style.cursor = "pointer";
+  btn.style.fontWeight = "bold";
+
+  const divPagas = document.createElement("div");
+  divPagas.id = "lista-pagas";
+  divPagas.style.marginTop = "1rem";
+
+  let visivel = false;
+
+  btn.onclick = async () => {
+    if (visivel) {
+      divPagas.innerHTML = "";
+      btn.textContent = "👁 Mostrar promissórias pagas";
+      visivel = false;
+    } else {
+      const res = await fetch(`${API_URL}/pagas`);
+      const pagas = await res.json();
+
+      divPagas.innerHTML = "<h3>✓ Promissórias Pagas</h3>";
+      if (pagas.length === 0) {
+        divPagas.innerHTML += "<p>Nenhuma promissória paga registrada.</p>";
+      } else {
+        const ul = document.createElement("ul");
+        pagas.forEach(p => {
+          const li = document.createElement("li");
+          li.style.color = "#777";
+
+          const telefone = p.telefone.replace(/[^\d\-]/g, '');
+          const dataBR = p.data.split('-').reverse().join('/');
+          const obs = p.observacoes ? ` - Obs.: ${p.observacoes}` : "";
+
+          li.textContent = `✓ ${p.nome} ${telefone} - R$${p.valor} - ${dataBR}${obs}`;
+          ul.appendChild(li);
+        });
+        divPagas.appendChild(ul);
+      }
+
+      btn.textContent = "👁 Ocultar promissórias pagas";
+      visivel = true;
+    }
+  };
+
+  container.appendChild(btn);
+  container.appendChild(divPagas);
+  document.body.appendChild(container);
+}
+
 // 🔁 Carregar promissórias
 async function carregarPromissorias() {
   lista.innerHTML = "Carregando...";
@@ -201,3 +260,5 @@ async function carregarPromissorias() {
 
 // ▶️ Inicia
 carregarPromissorias();
+criarBotaoMostrarPagas(); // 👁 Adiciona botão no final
+
