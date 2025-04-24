@@ -141,12 +141,12 @@ async function carregarListas() {
 
   // Ativas
   ativas
-    .filter(p => p.nome.toLowerCase().includes(filtroNome))
-    .forEach(p => {
-      const li = renderPromissoria(p, true);
-      lista.appendChild(li);
-      total += parseFloat(p.valorAtual);
-    });
+  .filter(p => !filtroNome || p.nome.toLowerCase().includes(filtroNome))
+  .forEach(p => {
+    const li = renderPromissoria(p, true);
+    lista.appendChild(li);
+    total += parseFloat(p.valorAtual);
+  });
 
   document.getElementById("total-dividas").textContent = `R$${total.toFixed(2)}`;
 
