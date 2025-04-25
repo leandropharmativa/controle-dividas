@@ -9,14 +9,14 @@ const SENHA = "1234";
 // 🛡️ Valida senha antes de carregar o sistema
 document.getElementById("btn-acessar").addEventListener("click", () => {
   const input = document.getElementById("campo-senha").value;
-  if (input === SENHA) {
-    document.getElementById("tela-senha").style.display = "none";
-    document.getElementById("conteudo-sistema").style.display = "block";
-    carregarPromissorias(); // carrega o conteúdo real
-    criarBotaoMostrarPagas(); // exibe o botão de pagas
-  } else {
-    document.getElementById("erro-senha").style.display = "block";
-  }
+ if (input === SENHA) {
+  document.getElementById("tela-senha").style.display = "none";
+  document.getElementById("conteudo-sistema").style.display = "block";
+  
+  // ✅ Somente agora ativa tudo
+  carregarPromissorias(); 
+  criarBotaoMostrarPagas();
+}
 });
 
 // 🔧 Utilitário para remover acentos e padronizar textos
