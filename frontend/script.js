@@ -156,12 +156,13 @@ async function carregarPromissorias() {
 
   // 👁 Atualiza lista de pagas automaticamente se estiver filtrando
   if (filtroNome) {
-    mostrarPagas(true);
-    btnPagas.textContent = "👁 Ocultar promissórias pagas";
-    visivelPagas = true;
-  } else if (!visivelPagas) {
-    divPagas.innerHTML = "";
-    btnPagas.textContent = "👁 Mostrar promissórias pagas";
+  mostrarPagas(true);
+  btnPagas.textContent = "👁 Ocultar promissórias pagas";
+  visivelPagas = true;
+  } else {
+  divPagas.innerHTML = "";
+  btnPagas.textContent = "👁 Mostrar promissórias pagas";
+  visivelPagas = false;
   }
 }
 
