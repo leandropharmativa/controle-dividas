@@ -1,9 +1,17 @@
+// 🌐 URLs da API
 const API_URL = "https://controle-dividas.onrender.com/promissorias";
 const PAGAMENTO_URL = "https://controle-dividas.onrender.com/pagamentos";
 const ADICAO_URL = "https://controle-dividas.onrender.com/adicoes";
 
+// 🔧 Utilitário para remover acentos e padronizar textos
+function removerAcentos(texto) {
+  return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+// 🎯 Elementos principais
 const form = document.getElementById("form-promissoria");
 const lista = document.getElementById("lista-promissorias");
+
 let divPagas, btnPagas, visivelPagas = false;
 
 // ➕ Criar nova promissória
@@ -26,11 +34,9 @@ form.addEventListener("submit", async (e) => {
 
   form.reset();
   carregarPromissorias();
-}
+});
 
-// ✅ Marcar como quitada
-);
-
+// ✅ Marcar promissória como quitada
 async function quitarPromissoria(id) {
   if (!confirm("Deseja realmente marcar como quitada?")) return;
   await fetch(`${API_URL}/${id}/quitar`, { method: "PUT" });
@@ -54,7 +60,7 @@ async function registrarPagamento(id, nome) {
   carregarPromissorias();
 }
 
-// 💸 Adicionar valor
+// 💸 Adicionar valor à dívida
 async function adicionarValor(id, nome) {
   const valor = prompt("Informe o valor adicional:");
   if (!valor || isNaN(valor)) return;
@@ -70,7 +76,7 @@ async function adicionarValor(id, nome) {
   carregarPromissorias();
 }
 
-// 📜 Mostrar histórico
+// 📜 Mostrar histórico de adições e pagamentos
 async function mostrarPagamentos(id, container) {
   const existe = container.querySelector(".pagamentos");
   if (existe) {
@@ -126,15 +132,17 @@ async function mostrarPagamentos(id, container) {
   container.appendChild(ul);
 }
 
-// 🔁 Carrega ativas e atualiza lista de pagas dinamicamente
+// 🔁 Carregar promissórias ativas e atualizar pagas dinamicamente
 async function carregarPromissorias() {
-  const filtroNome = document.getElementById("filtro-nome").value.toLowerCase();
+  const filtroNome = document.getElementById("filtro-nome").value;
 
-  // 🟢 Ativas
   const res = await fetch(API_URL);
   const promissorias = await res.json();
 
-  const filtradas = promissorias.filter(p => !filtroNome || p.nome.toLowerCase().includes(filtroNome));
+  const filtradas = promissorias.filter(p =>
+    !filtroNome || removerAcentos(p.nome).includes(removerAcentos(filtroNome))
+  );
+
   let total = 0;
   lista.innerHTML = "";
 
@@ -146,7 +154,7 @@ async function carregarPromissorias() {
 
   document.getElementById("total-dividas").textContent = `R$${total.toFixed(2)}`;
 
-  // 👁 Atualizar pagas se filtro ativo
+  // 👁 Atualiza lista de pagas automaticamente se estiver filtrando
   if (filtroNome) {
     mostrarPagas(true);
     btnPagas.textContent = "👁 Ocultar promissórias pagas";
@@ -157,7 +165,7 @@ async function carregarPromissorias() {
   }
 }
 
-// 🧍 Renderiza promissória
+// 📌 Renderizar item da lista de promissória ativa
 function renderPromissoria(p) {
   const li = document.createElement("li");
 
@@ -204,7 +212,7 @@ function renderPromissoria(p) {
   return li;
 }
 
-// 👁 Cria botão + div final para promissórias pagas
+// 👁 Criar botão final de "Mostrar/ocultar promissórias pagas"
 function criarBotaoMostrarPagas() {
   const container = document.createElement("div");
   container.style.textAlign = "center";
@@ -240,13 +248,16 @@ function criarBotaoMostrarPagas() {
   document.body.appendChild(container);
 }
 
-// 📜 Exibe promissórias pagas (manual ou via busca)
+// 📜 Mostrar lista de promissórias pagas (manual ou por busca)
 async function mostrarPagas(apenasFiltradas = false) {
-  const filtroNome = document.getElementById("filtro-nome").value.toLowerCase();
+  const filtroNome = document.getElementById("filtro-nome").value;
   const res = await fetch(`${API_URL}/pagas`);
   const pagas = await res.json();
 
-  const filtradas = pagas.filter(p => !filtroNome || p.nome.toLowerCase().includes(filtroNome));
+  const filtradas = pagas.filter(p =>
+    !filtroNome || removerAcentos(p.nome).includes(removerAcentos(filtroNome))
+  );
+
   if (apenasFiltradas && filtradas.length === 0) {
     divPagas.innerHTML = "";
     return;
@@ -271,7 +282,7 @@ async function mostrarPagas(apenasFiltradas = false) {
   divPagas.appendChild(ul);
 }
 
-// ▶️ Inicializa
+// ▶️ Inicialização
 carregarPromissorias();
 criarBotaoMostrarPagas();
 document.getElementById("filtro-nome").addEventListener("input", carregarPromissorias);
