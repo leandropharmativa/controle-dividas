@@ -4,6 +4,7 @@ const ADICAO_URL = "https://controle-dividas.onrender.com/adicoes";
 
 const form = document.getElementById("form-promissoria");
 const lista = document.getElementById("lista-promissorias");
+let divPagas, btnPagas, visivelPagas = false;
 
 // ➕ Criar nova promissória
 form.addEventListener("submit", async (e) => {
@@ -25,9 +26,11 @@ form.addEventListener("submit", async (e) => {
 
   form.reset();
   carregarPromissorias();
-});
+}
 
 // ✅ Marcar como quitada
+);
+
 async function quitarPromissoria(id) {
   if (!confirm("Deseja realmente marcar como quitada?")) return;
   await fetch(`${API_URL}/${id}/quitar`, { method: "PUT" });
@@ -51,7 +54,7 @@ async function registrarPagamento(id, nome) {
   carregarPromissorias();
 }
 
-// 💸 Adicionar valor à dívida
+// 💸 Adicionar valor
 async function adicionarValor(id, nome) {
   const valor = prompt("Informe o valor adicional:");
   if (!valor || isNaN(valor)) return;
@@ -67,7 +70,7 @@ async function adicionarValor(id, nome) {
   carregarPromissorias();
 }
 
-// 📜 Mostrar histórico (adições + pagamentos)
+// 📜 Mostrar histórico
 async function mostrarPagamentos(id, container) {
   const existe = container.querySelector(".pagamentos");
   if (existe) {
@@ -123,15 +126,15 @@ async function mostrarPagamentos(id, container) {
   container.appendChild(ul);
 }
 
-// 🔁 Carregar promissórias ativas
+// 🔁 Carrega ativas e atualiza lista de pagas dinamicamente
 async function carregarPromissorias() {
-  lista.innerHTML = "Carregando...";
+  const filtroNome = document.getElementById("filtro-nome").value.toLowerCase();
+
+  // 🟢 Ativas
   const res = await fetch(API_URL);
   const promissorias = await res.json();
 
-  const filtroNome = document.getElementById("filtro-nome").value.toLowerCase();
   const filtradas = promissorias.filter(p => !filtroNome || p.nome.toLowerCase().includes(filtroNome));
-
   let total = 0;
   lista.innerHTML = "";
 
@@ -142,9 +145,19 @@ async function carregarPromissorias() {
   });
 
   document.getElementById("total-dividas").textContent = `R$${total.toFixed(2)}`;
+
+  // 👁 Atualizar pagas se filtro ativo
+  if (filtroNome) {
+    mostrarPagas(true);
+    btnPagas.textContent = "👁 Ocultar promissórias pagas";
+    visivelPagas = true;
+  } else if (!visivelPagas) {
+    divPagas.innerHTML = "";
+    btnPagas.textContent = "👁 Mostrar promissórias pagas";
+  }
 }
 
-// 🧍 Renderizar uma promissória
+// 🧍 Renderiza promissória
 function renderPromissoria(p) {
   const li = document.createElement("li");
 
@@ -191,69 +204,74 @@ function renderPromissoria(p) {
   return li;
 }
 
-// 👁 Botão no final da tela para mostrar todas as quitadas
-async function criarBotaoMostrarPagas() {
+// 👁 Cria botão + div final para promissórias pagas
+function criarBotaoMostrarPagas() {
   const container = document.createElement("div");
   container.style.textAlign = "center";
   container.style.marginTop = "2rem";
 
-  const btn = document.createElement("button");
-  btn.textContent = "👁 Mostrar promissórias pagas";
-  btn.style.padding = "8px 16px";
-  btn.style.border = "none";
-  btn.style.borderRadius = "6px";
-  btn.style.background = "#ccc";
-  btn.style.cursor = "pointer";
-  btn.style.fontWeight = "bold";
+  btnPagas = document.createElement("button");
+  btnPagas.textContent = "👁 Mostrar promissórias pagas";
+  btnPagas.style.padding = "8px 16px";
+  btnPagas.style.border = "none";
+  btnPagas.style.borderRadius = "6px";
+  btnPagas.style.background = "#ccc";
+  btnPagas.style.cursor = "pointer";
+  btnPagas.style.fontWeight = "bold";
 
-  const divPagas = document.createElement("div");
+  divPagas = document.createElement("div");
   divPagas.id = "lista-pagas";
   divPagas.style.marginTop = "1rem";
 
-  let visivel = false;
-
-  btn.onclick = async () => {
-    if (visivel) {
+  btnPagas.onclick = async () => {
+    if (visivelPagas) {
       divPagas.innerHTML = "";
-      btn.textContent = "👁 Mostrar promissórias pagas";
-      visivel = false;
+      btnPagas.textContent = "👁 Mostrar promissórias pagas";
+      visivelPagas = false;
     } else {
-      const res = await fetch(`${API_URL}/pagas`);
-      const pagas = await res.json();
-
-      const filtroNome = document.getElementById("filtro-nome").value.toLowerCase();
-      const filtradas = pagas.filter(p => !filtroNome || p.nome.toLowerCase().includes(filtroNome));
-
-      divPagas.innerHTML = "<h3>✓ Promissórias Pagas</h3>";
-      if (filtradas.length === 0) {
-        divPagas.innerHTML += "<p>Nenhuma promissória paga registrada.</p>";
-      } else {
-        const ul = document.createElement("ul");
-        filtradas.forEach(p => {
-          const li = document.createElement("li");
-          li.style.color = "#777";
-          const dataBR = p.data.split('-').reverse().join('/');
-          const telefone = p.telefone.replace(/[^\d\-]/g, '');
-          const obs = p.observacoes ? ` - Obs.: ${p.observacoes}` : "";
-          li.textContent = `✓ ${p.nome} ${telefone} - R$${p.valor} - ${dataBR}${obs}`;
-          ul.appendChild(li);
-        });
-        divPagas.appendChild(ul);
-      }
-
-      btn.textContent = "👁 Ocultar promissórias pagas";
-      visivel = true;
+      await mostrarPagas();
+      btnPagas.textContent = "👁 Ocultar promissórias pagas";
+      visivelPagas = true;
     }
   };
 
-  container.appendChild(btn);
+  container.appendChild(btnPagas);
   container.appendChild(divPagas);
   document.body.appendChild(container);
 }
 
-// ▶️ Inicializar
+// 📜 Exibe promissórias pagas (manual ou via busca)
+async function mostrarPagas(apenasFiltradas = false) {
+  const filtroNome = document.getElementById("filtro-nome").value.toLowerCase();
+  const res = await fetch(`${API_URL}/pagas`);
+  const pagas = await res.json();
+
+  const filtradas = pagas.filter(p => !filtroNome || p.nome.toLowerCase().includes(filtroNome));
+  if (apenasFiltradas && filtradas.length === 0) {
+    divPagas.innerHTML = "";
+    return;
+  }
+
+  divPagas.innerHTML = "<h3>✓ Promissórias Pagas</h3>";
+  if (filtradas.length === 0) {
+    divPagas.innerHTML += "<p>Nenhuma promissória paga registrada.</p>";
+    return;
+  }
+
+  const ul = document.createElement("ul");
+  filtradas.forEach(p => {
+    const li = document.createElement("li");
+    li.style.color = "#777";
+    const dataBR = p.data.split('-').reverse().join('/');
+    const telefone = p.telefone.replace(/[^\d\-]/g, '');
+    const obs = p.observacoes ? ` - Obs.: ${p.observacoes}` : "";
+    li.textContent = `✓ ${p.nome} ${telefone} - R$${p.valor} - ${dataBR}${obs}`;
+    ul.appendChild(li);
+  });
+  divPagas.appendChild(ul);
+}
+
+// ▶️ Inicializa
 carregarPromissorias();
 criarBotaoMostrarPagas();
-document.getElementById("filtro-nome").addEventListener("input", () => {
-  carregarPromissorias();
-});
+document.getElementById("filtro-nome").addEventListener("input", carregarPromissorias);
