@@ -1,25 +1,12 @@
-// 🌐 URLs da API
+// 🌐 Endpoints da API
 const API_URL = "https://controle-dividas.onrender.com/promissorias";
 const PAGAMENTO_URL = "https://controle-dividas.onrender.com/pagamentos";
 const ADICAO_URL = "https://controle-dividas.onrender.com/adicoes";
 
-// 🔐 Senha de acesso única (defina aqui)
+// 🔐 Senha única para liberar o sistema
 const SENHA = "1234";
 
-// 🛡️ Valida senha antes de carregar o sistema
-document.getElementById("btn-acessar").addEventListener("click", () => {
-  const input = document.getElementById("campo-senha").value;
- if (input === SENHA) {
-  document.getElementById("tela-senha").style.display = "none";
-  document.getElementById("conteudo-sistema").style.display = "block";
-  
-  // ✅ Somente agora ativa tudo
-  carregarPromissorias(); 
-  criarBotaoMostrarPagas();
-}
-});
-
-// 🔧 Utilitário para remover acentos e padronizar textos
+// 🔧 Função auxiliar para busca sem acento
 function removerAcentos(texto) {
   return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
@@ -29,6 +16,21 @@ const form = document.getElementById("form-promissoria");
 const lista = document.getElementById("lista-promissorias");
 
 let divPagas, btnPagas, visivelPagas = false;
+
+// 🔐 Validação da senha
+document.getElementById("btn-acessar").addEventListener("click", () => {
+  const input = document.getElementById("campo-senha").value;
+  if (input === SENHA) {
+    document.getElementById("tela-senha").style.display = "none";
+    document.getElementById("conteudo-sistema").style.display = "block";
+
+    // ✅ Só agora carregamos o conteúdo do sistema
+    carregarPromissorias();
+    criarBotaoMostrarPagas();
+  } else {
+    document.getElementById("erro-senha").style.display = "block";
+  }
+});
 
 // ➕ Criar nova promissória
 form.addEventListener("submit", async (e) => {
@@ -52,14 +54,14 @@ form.addEventListener("submit", async (e) => {
   carregarPromissorias();
 });
 
-// ✅ Marcar promissória como quitada
+// ✅ Marcar como quitada
 async function quitarPromissoria(id) {
   if (!confirm("Deseja realmente marcar como quitada?")) return;
   await fetch(`${API_URL}/${id}/quitar`, { method: "PUT" });
   carregarPromissorias();
 }
 
-// ➖ Registrar pagamento parcial
+// ➖ Pagamento parcial
 async function registrarPagamento(id, nome) {
   const valor = prompt("Informe o valor pago:");
   if (!valor) return;
@@ -76,7 +78,7 @@ async function registrarPagamento(id, nome) {
   carregarPromissorias();
 }
 
-// 💸 Adicionar valor à dívida
+// 💸 Adicionar valor
 async function adicionarValor(id, nome) {
   const valor = prompt("Informe o valor adicional:");
   if (!valor || isNaN(valor)) return;
@@ -92,7 +94,7 @@ async function adicionarValor(id, nome) {
   carregarPromissorias();
 }
 
-// 📜 Mostrar histórico de adições e pagamentos
+// 📜 Histórico de pagamentos e adições
 async function mostrarPagamentos(id, container) {
   const existe = container.querySelector(".pagamentos");
   if (existe) {
@@ -148,7 +150,7 @@ async function mostrarPagamentos(id, container) {
   container.appendChild(ul);
 }
 
-// 🔁 Carregar promissórias ativas e atualizar pagas dinamicamente
+// 🔁 Carrega promissórias ativas e gerencia lista de pagas
 async function carregarPromissorias() {
   const filtroNome = document.getElementById("filtro-nome").value;
 
@@ -170,19 +172,18 @@ async function carregarPromissorias() {
 
   document.getElementById("total-dividas").textContent = `R$${total.toFixed(2)}`;
 
-  // 👁 Atualiza lista de pagas automaticamente se estiver filtrando
   if (filtroNome) {
-  mostrarPagas(true);
-  btnPagas.textContent = "👁 Ocultar promissórias pagas";
-  visivelPagas = true;
+    mostrarPagas(true);
+    btnPagas.textContent = "👁 Ocultar promissórias pagas";
+    visivelPagas = true;
   } else {
-  divPagas.innerHTML = "";
-  btnPagas.textContent = "👁 Mostrar promissórias pagas";
-  visivelPagas = false;
+    divPagas.innerHTML = "";
+    btnPagas.textContent = "👁 Mostrar promissórias pagas";
+    visivelPagas = false;
   }
 }
 
-// 📌 Renderizar item da lista de promissória ativa
+// 🧍 Renderiza promissória ativa
 function renderPromissoria(p) {
   const li = document.createElement("li");
 
@@ -229,7 +230,7 @@ function renderPromissoria(p) {
   return li;
 }
 
-// 👁 Criar botão final de "Mostrar/ocultar promissórias pagas"
+// 👁 Botão de "Mostrar promissórias pagas"
 function criarBotaoMostrarPagas() {
   const container = document.createElement("div");
   container.style.textAlign = "center";
@@ -265,7 +266,7 @@ function criarBotaoMostrarPagas() {
   document.body.appendChild(container);
 }
 
-// 📜 Mostrar lista de promissórias pagas (manual ou por busca)
+// 📜 Lista de promissórias pagas
 async function mostrarPagas(apenasFiltradas = false) {
   const filtroNome = document.getElementById("filtro-nome").value;
   const res = await fetch(`${API_URL}/pagas`);
@@ -299,7 +300,5 @@ async function mostrarPagas(apenasFiltradas = false) {
   divPagas.appendChild(ul);
 }
 
-// ▶️ Inicialização
-carregarPromissorias();
-criarBotaoMostrarPagas();
+// 🧭 Atualização dinâmica ao digitar
 document.getElementById("filtro-nome").addEventListener("input", carregarPromissorias);
