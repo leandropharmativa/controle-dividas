@@ -4,7 +4,7 @@ const PAGAMENTO_URL = "https://controle-dividas.onrender.com/pagamentos";
 const ADICAO_URL = "https://controle-dividas.onrender.com/adicoes";
 
 // 🔐 Senha única para liberar o sistema
-const SENHA = "1234";
+const SENHA = "202040";
 
 // 🔧 Função auxiliar para busca sem acento
 function removerAcentos(texto) {
