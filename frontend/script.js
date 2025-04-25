@@ -4,7 +4,6 @@ const ADICAO_URL = "https://controle-dividas.onrender.com/adicoes";
 
 const form = document.getElementById("form-promissoria");
 const lista = document.getElementById("lista-promissorias");
-const pagasDiv = document.getElementById("lista-pagas");
 
 // ➕ Criar nova promissória
 form.addEventListener("submit", async (e) => {
@@ -25,14 +24,14 @@ form.addEventListener("submit", async (e) => {
   });
 
   form.reset();
-  carregarListas();
+  carregarPromissorias();
 });
 
 // ✅ Marcar como quitada
 async function quitarPromissoria(id) {
   if (!confirm("Deseja realmente marcar como quitada?")) return;
   await fetch(`${API_URL}/${id}/quitar`, { method: "PUT" });
-  carregarListas();
+  carregarPromissorias();
 }
 
 // ➖ Registrar pagamento parcial
@@ -49,10 +48,10 @@ async function registrarPagamento(id, nome) {
   });
 
   alert("Pagamento registrado com sucesso!");
-  carregarListas();
+  carregarPromissorias();
 }
 
-// 💸 Adicionar valor
+// 💸 Adicionar valor à dívida
 async function adicionarValor(id, nome) {
   const valor = prompt("Informe o valor adicional:");
   if (!valor || isNaN(valor)) return;
@@ -65,10 +64,10 @@ async function adicionarValor(id, nome) {
   });
 
   alert("Valor adicionado com sucesso!");
-  carregarListas();
+  carregarPromissorias();
 }
 
-// 📜 Mostrar histórico
+// 📜 Mostrar histórico (adições + pagamentos)
 async function mostrarPagamentos(id, container) {
   const existe = container.querySelector(".pagamentos");
   if (existe) {
@@ -124,55 +123,29 @@ async function mostrarPagamentos(id, container) {
   container.appendChild(ul);
 }
 
-// 🔄 Carrega e renderiza promissórias ativas e pagas com base no nome buscado
-async function carregarListas() {
+// 🔁 Carregar promissórias ativas
+async function carregarPromissorias() {
+  lista.innerHTML = "Carregando...";
+  const res = await fetch(API_URL);
+  const promissorias = await res.json();
+
   const filtroNome = document.getElementById("filtro-nome").value.toLowerCase();
-
-  const [resAtivas, resPagas] = await Promise.all([
-    fetch(API_URL),
-    fetch(`${API_URL}/pagas`)
-  ]);
-
-  const ativas = await resAtivas.json();
-  const pagas = await resPagas.json();
+  const filtradas = promissorias.filter(p => !filtroNome || p.nome.toLowerCase().includes(filtroNome));
 
   let total = 0;
   lista.innerHTML = "";
 
-  // Ativas
-  ativas
-  .filter(p => !filtroNome || p.nome.toLowerCase().includes(filtroNome))
-  .forEach(p => {
-    const li = renderPromissoria(p, true);
+  filtradas.forEach(p => {
+    const li = renderPromissoria(p);
     lista.appendChild(li);
     total += parseFloat(p.valorAtual);
   });
 
   document.getElementById("total-dividas").textContent = `R$${total.toFixed(2)}`;
-
-  // Pagas
-  pagasDiv.innerHTML = "";
-  const filtradasPagas = pagas.filter(p => p.nome.toLowerCase().includes(filtroNome));
-
-  if (filtroNome && filtradasPagas.length > 0) {
-    pagasDiv.innerHTML = "<h3>✓ Promissórias Pagas</h3>";
-    const ul = document.createElement("ul");
-    filtradasPagas.forEach(p => {
-      const dataBR = p.data.split('-').reverse().join('/');
-      const telefone = p.telefone.replace(/[^\d\-]/g, '');
-      const obs = p.observacoes ? ` - Obs.: ${p.observacoes}` : "";
-
-      const li = document.createElement("li");
-      li.style.color = "#777";
-      li.textContent = `✓ ${p.nome} ${telefone} - R$${p.valor} - ${dataBR}${obs}`;
-      ul.appendChild(li);
-    });
-    pagasDiv.appendChild(ul);
-  }
 }
 
-// 🔧 Renderiza uma promissória ativa
-function renderPromissoria(p, ativa = true) {
+// 🧍 Renderizar uma promissória
+function renderPromissoria(p) {
   const li = document.createElement("li");
 
   const btnQuitar = document.createElement("button");
@@ -218,6 +191,69 @@ function renderPromissoria(p, ativa = true) {
   return li;
 }
 
-// ▶️ Inicializa
-carregarListas();
-document.getElementById("filtro-nome").addEventListener("input", carregarListas);
+// 👁 Botão no final da tela para mostrar todas as quitadas
+async function criarBotaoMostrarPagas() {
+  const container = document.createElement("div");
+  container.style.textAlign = "center";
+  container.style.marginTop = "2rem";
+
+  const btn = document.createElement("button");
+  btn.textContent = "👁 Mostrar promissórias pagas";
+  btn.style.padding = "8px 16px";
+  btn.style.border = "none";
+  btn.style.borderRadius = "6px";
+  btn.style.background = "#ccc";
+  btn.style.cursor = "pointer";
+  btn.style.fontWeight = "bold";
+
+  const divPagas = document.createElement("div");
+  divPagas.id = "lista-pagas";
+  divPagas.style.marginTop = "1rem";
+
+  let visivel = false;
+
+  btn.onclick = async () => {
+    if (visivel) {
+      divPagas.innerHTML = "";
+      btn.textContent = "👁 Mostrar promissórias pagas";
+      visivel = false;
+    } else {
+      const res = await fetch(`${API_URL}/pagas`);
+      const pagas = await res.json();
+
+      const filtroNome = document.getElementById("filtro-nome").value.toLowerCase();
+      const filtradas = pagas.filter(p => !filtroNome || p.nome.toLowerCase().includes(filtroNome));
+
+      divPagas.innerHTML = "<h3>✓ Promissórias Pagas</h3>";
+      if (filtradas.length === 0) {
+        divPagas.innerHTML += "<p>Nenhuma promissória paga registrada.</p>";
+      } else {
+        const ul = document.createElement("ul");
+        filtradas.forEach(p => {
+          const li = document.createElement("li");
+          li.style.color = "#777";
+          const dataBR = p.data.split('-').reverse().join('/');
+          const telefone = p.telefone.replace(/[^\d\-]/g, '');
+          const obs = p.observacoes ? ` - Obs.: ${p.observacoes}` : "";
+          li.textContent = `✓ ${p.nome} ${telefone} - R$${p.valor} - ${dataBR}${obs}`;
+          ul.appendChild(li);
+        });
+        divPagas.appendChild(ul);
+      }
+
+      btn.textContent = "👁 Ocultar promissórias pagas";
+      visivel = true;
+    }
+  };
+
+  container.appendChild(btn);
+  container.appendChild(divPagas);
+  document.body.appendChild(container);
+}
+
+// ▶️ Inicializar
+carregarPromissorias();
+criarBotaoMostrarPagas();
+document.getElementById("filtro-nome").addEventListener("input", () => {
+  carregarPromissorias();
+});
