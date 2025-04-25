@@ -8,31 +8,45 @@
 </head>
 <body>
 
-  <h1>Controle de Promissórias</h1>
-  <h2>Lista de promissórias ativas</h2>
-  <p>Total de dívidas: <strong id="total-dividas">R$0,00</strong></p>
-
-  <!-- 🔍 Campo de pesquisa por nome -->
-  <div id="filtros" style="margin-bottom: 1rem;">
-    <input type="text" id="filtro-nome" placeholder="🔍 Buscar nome..." />
+  <!-- 🔐 Tela de bloqueio -->
+  <div id="tela-senha">
+    <h2>🔐 Acesso restrito</h2>
+    <input type="password" id="campo-senha" placeholder="Digite a senha" />
+    <button id="btn-acessar">Acessar</button>
+    <p id="erro-senha" style="color:red; display:none;">Senha incorreta</p>
   </div>
 
-  <!-- 📋 Formulário -->
-  <form id="form-promissoria">
-    <input name="nome" placeholder="Nome" required />
-    <input name="telefone" placeholder="Telefone" required />
-    <input name="valor" placeholder="Valor" type="number" required />
-    <input name="data" placeholder="Data (AAAA-MM-DD)" type="date" required />
-    <input name="observacoes" placeholder="Observações" />
-    <button type="submit" class="btn-adicionar">Adicionar</button>
-  </form>
+  <!-- 🔓 Conteúdo do sistema (inicialmente oculto) -->
+  <div id="conteudo-sistema" style="display: none;">
 
-  <!-- 📌 Lista de promissórias ativas -->
-  <ul id="lista-promissorias"></ul>
+    <h1>Controle de Promissórias</h1>
+    <h2>Lista de promissórias ativas</h2>
+    <p>Total de dívidas: <strong id="total-dividas">R$0,00</strong></p>
 
-  <!-- 📜 Lista de promissórias pagas -->
-  <div id="lista-pagas"></div>
+    <!-- 🔍 Campo de filtro -->
+    <div id="filtros" style="margin-bottom: 1rem;">
+      <input type="text" id="filtro-nome" placeholder="🔍 Buscar nome..." />
+    </div>
 
+    <!-- 📋 Formulário -->
+    <form id="form-promissoria">
+      <input name="nome" placeholder="Nome" required />
+      <input name="telefone" placeholder="Telefone" required />
+      <input name="valor" placeholder="Valor" type="number" required />
+      <input name="data" placeholder="Data (AAAA-MM-DD)" type="date" required />
+      <input name="observacoes" placeholder="Observações" />
+      <button type="submit" class="btn-adicionar">Adicionar</button>
+    </form>
+
+    <!-- 📌 Lista de promissórias ativas -->
+    <ul id="lista-promissorias"></ul>
+
+    <!-- 📜 Lista de promissórias pagas (via JS) -->
+    <div id="lista-pagas"></div>
+
+  </div>
+
+  <!-- 🔧 Scripts -->
   <script src="script.js"></script>
 </body>
 </html>
