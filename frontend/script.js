@@ -3,9 +3,6 @@ const API_URL = "https://controle-dividas.onrender.com/promissorias";
 const PAGAMENTO_URL = "https://controle-dividas.onrender.com/pagamentos";
 const ADICAO_URL = "https://controle-dividas.onrender.com/adicoes";
 
-// 🔐 Senha única para liberar o sistema
-const SENHA = "202040";
-
 // 🔧 Função auxiliar para busca sem acento
 function removerAcentos(texto) {
   return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -35,9 +32,16 @@ async function aguardarBackend() {
 let divPagas, btnPagas, visivelPagas = false;
 
 // 🔐 Validação da senha
-document.getElementById("btn-acessar").addEventListener("click", () => {
-  const input = document.getElementById("campo-senha").value;
-  if (input === SENHA) {
+document.getElementById("btn-acessar").addEventListener("click", async () => {
+  const senha = document.getElementById("campo-senha").value;
+
+  const res = await fetch("https://controle-dividas.onrender.com/verificar-senha", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ senha }),
+  });
+
+  if (res.ok) {
     document.getElementById("tela-senha").style.display = "none";
     document.getElementById("menu-principal").style.display = "block";
   } else {
