@@ -375,18 +375,22 @@ document.getElementById("form-estoque").addEventListener("submit", async (e) => 
 });
 
 function mostrarTela(tipo) {
-  ocultarTodasAsTelas();
+  document.getElementById("menu-principal").style.display = "none";
+  document.getElementById("conteudo-sistema").style.display = "none";
+  document.getElementById("tela-estoque").style.display = "none";
+  document.getElementById("tela-duplicatas").style.display = "none";
 
-  if (tipo === 'promissorias') {
-    document.getElementById('conteudo-sistema').style.display = 'block';
-    carregarPromissorias(); // ← carrega lista de promissórias
-  } else if (tipo === 'estoque') {
-    document.getElementById('tela-estoque').style.display = 'block';
-    carregarProdutos();     // ← preenche dropdown de produtos
-    carregarEstoque();      // ← carrega a lista de estoque atual
-  } else if (tipo === 'duplicatas') {
-    document.getElementById('tela-duplicatas').style.display = 'block';
-    carregarDuplicatas();   // ← carrega duplicatas lançadas
+  if (tipo === "promissorias") {
+    document.getElementById("conteudo-sistema").style.display = "block";
+    carregarPromissorias();
+    criarBotaoMostrarPagas();
+  } else if (tipo === "estoque") {
+    document.getElementById("tela-estoque").style.display = "block";
+    carregarProdutos();
+    carregarEstoque();
+  } else if (tipo === "duplicatas") {
+    document.getElementById("tela-duplicatas").style.display = "block";
+    carregarDuplicatas();
   }
 }
 
