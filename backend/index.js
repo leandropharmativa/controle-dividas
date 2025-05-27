@@ -413,14 +413,19 @@ app.get('/estoque', async (req, res) => {
   const sheets = await getSheetsClient();
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId: SHEET_ID,
-    range: 'estoque!A2:D', // A: Produto, B: Quantidade, C: Valor Unitário, D: Valor Total
+    range: 'estoque!A2:D', // Certifique-se de pegar até a coluna do valor total
   });
 
   const registros = (result.data.values || []).map(row => {
     const produto = row[0] || "";
-    const quantidade = parseFloat(row[1] || 0);
-    const valorUnitario = parseFloat(row[2] || 0);
-    const valorTotal = parseFloat(row[3] || (quantidade * valorUnitario)).toFixed(2);
+
+    const parseMoeda = valor =>
+      parseFloat((valor || "0").toString().replace("R$", "").replace(",", ".").trim());
+
+    const quantidade = parseMoeda(row[1]);
+    const valorUnitario = parseMoeda(row[2]);
+    const valorTotal =
+      row[3] ? parseMoeda(row[3]) : parseFloat((quantidade * valorUnitario).toFixed(2));
 
     return {
       produto,
@@ -432,6 +437,7 @@ app.get('/estoque', async (req, res) => {
 
   res.json(registros);
 });
+
 
 
 // 🔁 Histórico completo de movimentações
