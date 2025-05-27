@@ -86,16 +86,16 @@ form.addEventListener("submit", async (e) => {
 
 // ✅ Marcar como quitada
 async function quitarPromissoria(id) {
-  if (!(await confirmar("Deseja realmente marcar como quitada?"))) return;
+  if (!confirm("Deseja realmente marcar como quitada?")) return;
   await fetch(`${API_URL}/${id}/quitar`, { method: "PUT" });
   carregarPromissorias();
 }
 
 // ➖ Pagamento parcial
 async function registrarPagamento(id, nome) {
-  const valor = await solicitarEntrada("Informe o valor pago:");
+  const valor = prompt("Informe o valor pago:");
   if (!valor) return;
-  const observacao = await solicitarEntrada("Alguma observação?") || "";
+  const observacao = prompt("Alguma observação?") || "";
   const data = new Date().toISOString().split("T")[0];
 
   await fetch(PAGAMENTO_URL, {
@@ -110,9 +110,9 @@ async function registrarPagamento(id, nome) {
 
 // 💸 Adicionar valor
 async function adicionarValor(id, nome) {
-  const valor = await solicitarEntrada("Informe o valor adicional:");
+  const valor = prompt("Informe o valor adicional:");
   if (!valor || isNaN(valor)) return;
-  const observacao = await solicitarEntrada("Alguma observação?") || "";
+  const observacao = prompt("Alguma observação?") || "";
 
   await fetch(`${API_URL}/${id}/adicionar`, {
     method: "PUT",
@@ -380,12 +380,38 @@ function mostrarTelaEstoque() {
   carregarEstoque();
 }
 
-function voltarMenu() {
+function mostrarTela(tipo) {
   ocultarTodasAsTelas();
-  document.getElementById("menu-principal").style.display = "block";
 
-  // Ocultar botão de voltar ao retornar ao menu
-  document.querySelector('.btn-voltar-circulo').style.display = "none";
+  // Mostrar botão de voltar ao entrar em qualquer tela
+  document.querySelector('.btn-voltar-circulo').style.display = "flex";
+
+  if (tipo === "promissorias") {
+    document.getElementById("conteudo-sistema").style.display = "block";
+    carregarPromissorias();
+    criarBotaoMostrarPagas();
+  } else if (tipo === "estoque") {
+    document.getElementById("tela-estoque").style.display = "block";
+    carregarProdutos();
+    carregarEstoque();
+  } else if (tipo === "duplicatas") {
+    document.getElementById("tela-duplicatas").style.display = "block";
+    carregarDuplicatas();
+  }
+}
+
+function ocultarTodasAsTelas() {
+  document.getElementById("menu-principal").style.display = "none";
+  document.getElementById("conteudo-sistema").style.display = "none";
+  document.getElementById("tela-estoque").style.display = "none";
+  document.getElementById("tela-duplicatas").style.display = "none";
+}
+
+function voltarMenu() {
+  document.getElementById("tela-estoque").style.display = "none";
+  document.getElementById("conteudo-sistema").style.display = "none";
+  document.getElementById("tela-duplicatas").style.display = "none";
+  document.getElementById("menu-principal").style.display = "block";
 }
 
 async function carregarEstoque() {
@@ -504,7 +530,7 @@ async function carregarDuplicatas() {
           btn.textContent = "✓ Quitar";
           btn.style.marginLeft = "1rem";
           btn.onclick = async () => {
-            if (await confirmar("Confirmar quitação da duplicata?")) {
+            if (confirm("Confirmar quitação da duplicata?")) {
               await fetch(`https://controle-dividas.onrender.com/duplicatas/${d.id}/quitar`, {
                 method: "PUT",
               });
@@ -586,26 +612,6 @@ function solicitarEntrada(texto, valorPadrao = "") {
     ok.onclick = () => fechar(input.value.trim());
     cancelar.onclick = () => fechar(null);
   });
-}
-
-function mostrarTela(tipo) {
-  ocultarTodasAsTelas();
-
-  // Mostrar botão de voltar ao entrar em qualquer tela
-  document.querySelector('.btn-voltar-circulo').style.display = "flex";
-
-  if (tipo === "promissorias") {
-    document.getElementById("conteudo-sistema").style.display = "block";
-    carregarPromissorias();
-    criarBotaoMostrarPagas();
-  } else if (tipo === "estoque") {
-    document.getElementById("tela-estoque").style.display = "block";
-    carregarProdutos();
-    carregarEstoque();
-  } else if (tipo === "duplicatas") {
-    document.getElementById("tela-duplicatas").style.display = "block";
-    carregarDuplicatas();
-  }
 }
 
 aguardarBackend();
