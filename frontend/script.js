@@ -406,7 +406,7 @@ async function carregarEstoque() {
       const li = document.createElement("li");
 
       const qtd = parseFloat(reg.quantidade) || 0;
-      const preco = parseFloat(reg.valorUnitario || 0);
+      const preco = parseFloat(reg.valorUnitario) || 0;
       const total = parseFloat(reg.valorTotal) || qtd * preco;
       totalGeral += total;
 
@@ -417,7 +417,6 @@ async function carregarEstoque() {
     lista.innerHTML = "";
     lista.appendChild(ul);
 
-    // ➕ Exibe total geral
     const totalDiv = document.createElement("div");
     totalDiv.style.marginTop = "1rem";
     totalDiv.style.fontWeight = "bold";
