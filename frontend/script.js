@@ -363,10 +363,11 @@ document.getElementById("form-estoque").addEventListener("submit", async (e) => 
   const tipo = form.tipo.value;
   const justificativa = form.justificativa.value;
 
-  if (!produto || !quantidade || !tipo) {
-    alert("Preencha todos os campos obrigatórios.");
-    return;
-  }
+if (!produto || isNaN(quantidade) || !tipo) {
+  alert("Preencha todos os campos obrigatórios corretamente.");
+  return;
+}
+
 
   try {
     await fetch("https://controle-dividas.onrender.com/estoque", {
