@@ -15,6 +15,23 @@ function removerAcentos(texto) {
 const form = document.getElementById("form-promissoria");
 const lista = document.getElementById("lista-promissorias");
 
+async function aguardarBackend() {
+  const STATUS_URL = "https://controle-dividas.onrender.com/";
+
+  while (true) {
+    try {
+      const res = await fetch(STATUS_URL, { timeout: 10000 });
+      if (res.ok) break;
+    } catch (err) {
+      console.log("Backend ainda não respondeu...");
+    }
+    await new Promise(r => setTimeout(r, 1500)); // espera 1.5s
+  }
+
+  document.getElementById("tela-loading").style.display = "none";
+  document.getElementById("tela-senha").style.display = "block";
+}
+
 let divPagas, btnPagas, visivelPagas = false;
 
 // 🔐 Validação da senha
@@ -302,3 +319,5 @@ async function mostrarPagas(apenasFiltradas = false) {
 
 // 🧭 Atualização dinâmica ao digitar
 document.getElementById("filtro-nome").addEventListener("input", carregarPromissorias);
+aguardarBackend();
+
