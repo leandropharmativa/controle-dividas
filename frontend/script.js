@@ -406,7 +406,7 @@ function voltarMenu() {
 
 async function carregarEstoque() {
   const lista = document.getElementById("lista-estoque");
-  lista.innerHTML = "<p style='opacity:0.6;'>🔄 Carregando registros...</p>";
+  lista.innerHTML = "<p>Carregando registros...</p>";
 
   try {
     const res = await fetch("https://controle-dividas.onrender.com/estoque");
@@ -420,9 +420,13 @@ async function carregarEstoque() {
     const ul = document.createElement("ul");
 
     dados.forEach(reg => {
+      const total = reg.valorUnitario && reg.quantidade
+        ? (parseFloat(reg.valorUnitario) * parseFloat(reg.quantidade)).toFixed(2)
+        : "-";
       const li = document.createElement("li");
-      li.innerHTML = `<strong>${reg.produto}</strong> - ${reg.quantidade} (${reg.tipo}) em ${reg.data}` +
-        (reg.justificativa ? ` – ${reg.justificativa}` : "");
+      li.innerHTML = `<strong>${reg.produto}</strong> - ${reg.quantidade} unidades
+        ${reg.valorUnitario ? ` | R$${reg.valorUnitario} un.` : ""} 
+        ${total !== "-" ? ` | Total: R$${total}` : ""}`;
       ul.appendChild(li);
     });
 
