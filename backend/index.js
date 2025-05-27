@@ -341,29 +341,61 @@ app.post('/verificar-senha', async (req, res) => {
   }
 });
 
-// retorna lista de produtos:
+// 🔁 Listar produtos
 app.get('/produtos', async (req, res) => {
   const sheets = await getSheetsClient();
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId: SHEET_ID,
     range: 'produtos!A2:A',
   });
-
   const produtos = result.data.values?.map(r => r[0]).filter(Boolean) || [];
   res.json(produtos);
 });
 
-//registra entrada ou saída:
+// 📦 Registrar movimentação de estoque e atualizar saldo
 app.post('/estoque', async (req, res) => {
   const { produto, quantidade, tipo, justificativa } = req.body;
   if (!produto || !quantidade || !tipo) return res.status(400).send("Campos obrigatórios ausentes.");
 
-  const sheets = await getSheetsClient();
+  const qtd = parseFloat(quantidade);
+  const delta = tipo === "entrada" ? qtd : -qtd;
   const data = new Date().toISOString().split('T')[0];
+  const sheets = await getSheetsClient();
 
+  // Atualiza saldo na aba estoque
+  const estoqueRes = await sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range: 'estoque!A2:B',
+  });
+  const rows = estoqueRes.data.values || [];
+  const rowIndex = rows.findIndex(row => row[0] === produto);
+
+  let novoSaldo;
+  if (rowIndex !== -1) {
+    const atual = parseFloat(rows[rowIndex][1] || 0);
+    novoSaldo = Math.max(0, atual + delta);
+    rows[rowIndex][1] = novoSaldo.toString();
+
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: SHEET_ID,
+      range: `estoque!A${rowIndex + 2}:B${rowIndex + 2}`,
+      valueInputOption: 'RAW',
+      resource: { values: [rows[rowIndex]] },
+    });
+  } else {
+    novoSaldo = Math.max(0, delta);
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: SHEET_ID,
+      range: 'estoque!A:B',
+      valueInputOption: 'RAW',
+      resource: { values: [[produto, novoSaldo.toString()]] },
+    });
+  }
+
+  // Registra movimentação
   await sheets.spreadsheets.values.append({
     spreadsheetId: SHEET_ID,
-    range: 'estoque!A:E',
+    range: 'movimentacoes!A:E',
     valueInputOption: 'RAW',
     resource: {
       values: [[produto, quantidade, tipo, data, justificativa || ""]],
@@ -373,15 +405,32 @@ app.post('/estoque', async (req, res) => {
   res.sendStatus(201);
 });
 
-//retorna os registros da aba estoque
+// 📊 Consultar estoque atual (saldo)
 app.get('/estoque', async (req, res) => {
   const sheets = await getSheetsClient();
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId: SHEET_ID,
-    range: 'estoque!A2:E',
+    range: 'estoque!A2:B',
   });
 
   const registros = (result.data.values || []).map(row => ({
+    produto: row[0],
+    saldo: row[1],
+  }));
+
+  res.json(registros);
+});
+
+// 🔁 Histórico completo de movimentações
+app.get('/movimentacoes', async (req, res) => {
+  const sheets = await getSheetsClient();
+  const result = await sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range: 'movimentacoes!A2:E',
+  });
+
+  const rows = result.data.values || [];
+  const registros = rows.map(row => ({
     produto: row[0],
     quantidade: row[1],
     tipo: row[2],
