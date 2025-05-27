@@ -408,22 +408,31 @@ app.post('/estoque', async (req, res) => {
   res.sendStatus(201);
 });
 
-// 📊 Consultar estoque atual (saldo)
+// 📊 Consultar estoque atual (saldo com valores)
 app.get('/estoque', async (req, res) => {
   const sheets = await getSheetsClient();
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId: SHEET_ID,
-    range: 'estoque!A2:C',
+    range: 'estoque!A2:D', // A: Produto, B: Quantidade, C: Valor Unitário, D: Valor Total
   });
 
-  const registros = (result.data.values || []).map(row => ({
-    produto: row[0],
-    quantidade: row[1],
-    valorUnitario: row[2],
-  }));
+  const registros = (result.data.values || []).map(row => {
+    const produto = row[0] || "";
+    const quantidade = parseFloat(row[1] || 0);
+    const valorUnitario = parseFloat(row[2] || 0);
+    const valorTotal = parseFloat(row[3] || (quantidade * valorUnitario)).toFixed(2);
+
+    return {
+      produto,
+      quantidade,
+      valorUnitario,
+      valorTotal,
+    };
+  });
 
   res.json(registros);
 });
+
 
 // 🔁 Histórico completo de movimentações
 app.get('/movimentacoes', async (req, res) => {
