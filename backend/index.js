@@ -413,12 +413,13 @@ app.get('/estoque', async (req, res) => {
   const sheets = await getSheetsClient();
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId: SHEET_ID,
-    range: 'estoque!A2:B',
+    range: 'estoque!A2:C',
   });
 
   const registros = (result.data.values || []).map(row => ({
     produto: row[0],
-    saldo: row[1],
+    quantidade: row[1],
+    valorUnitario: row[2],
   }));
 
   res.json(registros);
