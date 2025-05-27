@@ -321,3 +321,23 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
+
+app.post('/verificar-senha', async (req, res) => {
+  const { senha } = req.body;
+  const sheets = await getSheetsClient();
+
+  // Buscar a senha salva na planilha
+  const result = await sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range: 'config!A1', // 👈 crie uma aba "config" e coloque a senha na célula A1
+  });
+
+  const senhaCorreta = result.data.values?.[0]?.[0] || "";
+
+  if (senha === senhaCorreta) {
+    res.sendStatus(200);
+  } else {
+    res.sendStatus(403);
+  }
+});
+
