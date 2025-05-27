@@ -92,3 +92,14 @@ li button:nth-child(3) { background-color: #ff9800; color: white; } /* + Parcial
   flex-basis: 100%;  /* 🆕 força quebra para nova linha */
 }
 
+.btn-menu {
+  padding: 12px 20px;
+  margin: 8px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #d9d9d9;
+  cursor: pointer;
+  font-weight: bold;
+}
+
