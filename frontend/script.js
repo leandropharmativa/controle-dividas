@@ -262,22 +262,8 @@ function renderPromissoria(p) {
 
 // 👁 Botão "Mostrar promissórias pagas"
 function criarBotaoMostrarPagas() {
-  const container = document.createElement("div");
-  container.style.textAlign = "center";
-  container.style.marginTop = "2rem";
-
-  btnPagas = document.createElement("button");
-  btnPagas.textContent = "👁 Mostrar promissórias pagas";
-  btnPagas.style.padding = "8px 16px";
-  btnPagas.style.border = "none";
-  btnPagas.style.borderRadius = "6px";
-  btnPagas.style.background = "#ccc";
-  btnPagas.style.cursor = "pointer";
-  btnPagas.style.fontWeight = "bold";
-
-  divPagas = document.createElement("div");
-  divPagas.id = "lista-pagas";
-  divPagas.style.marginTop = "1rem";
+  btnPagas = document.getElementById("btn-pagas");
+  divPagas = document.getElementById("lista-pagas");
 
   btnPagas.onclick = async () => {
     if (visivelPagas) {
@@ -290,10 +276,6 @@ function criarBotaoMostrarPagas() {
       visivelPagas = true;
     }
   };
-
-  container.appendChild(btnPagas);
-  container.appendChild(divPagas);
-  document.body.appendChild(container);
 }
 
 // 📜 Lista de promissórias pagas
