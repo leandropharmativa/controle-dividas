@@ -363,23 +363,30 @@ document.getElementById("form-estoque").addEventListener("submit", async (e) => 
   const tipo = form.tipo.value;
   const justificativa = form.justificativa.value;
 
-if (!produto || isNaN(quantidade) || !tipo) {
-  alert("Preencha todos os campos obrigatórios corretamente.");
-  return;
-}
+  // 🔒 Verifica se todos os campos estão preenchidos
+  if (!produto || !quantidade || !tipo) {
+    alert("Preencha todos os campos obrigatórios.");
+    return;
+  }
 
+  // 🔢 Verifica se a quantidade é válida
+  const qtd = parseFloat(quantidade);
+  if (isNaN(qtd) || qtd <= 0) {
+    alert("A quantidade deve ser um número positivo.");
+    return;
+  }
 
   try {
     await fetch("https://controle-dividas.onrender.com/estoque", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ produto, quantidade, tipo, justificativa }),
+      body: JSON.stringify({ produto, quantidade: qtd, tipo, justificativa }),
     });
 
     alert("Movimentação registrada com sucesso.");
     form.reset();
-    form.produto.focus();
-    carregarEstoque(); // caso queira atualizar a lista
+    document.getElementById("select-produto").focus();
+    carregarEstoque();
   } catch (err) {
     alert("Erro ao registrar movimentação.");
   }
@@ -388,7 +395,7 @@ if (!produto || isNaN(quantidade) || !tipo) {
 function mostrarTelaEstoque() {
   document.getElementById("tela-estoque").style.display = "block";
   carregarProdutos();
-  carregarEstoque?.(); // (opcional, se quiser exibir lista futura)
+  carregarEstoque();
 }
 
 function voltarMenu() {
@@ -399,7 +406,7 @@ function voltarMenu() {
 
 async function carregarEstoque() {
   const lista = document.getElementById("lista-estoque");
-  lista.innerHTML = "<p>Carregando registros...</p>";
+  lista.innerHTML = "<p style='opacity:0.6;'>🔄 Carregando registros...</p>";
 
   try {
     const res = await fetch("https://controle-dividas.onrender.com/estoque");
