@@ -51,21 +51,15 @@ document.getElementById("btn-acessar").addEventListener("click", async () => {
 
 // 👁 Escolha do módulo após login
 document.getElementById("btn-promissorias").addEventListener("click", () => {
-  document.getElementById("menu-principal").style.display = "none";
-  document.getElementById("conteudo-sistema").style.display = "block";
-  carregarPromissorias();
-  criarBotaoMostrarPagas();
+  mostrarTela('promissorias');
 });
 
 document.getElementById("btn-estoque").addEventListener("click", () => {
-  document.getElementById("menu-principal").style.display = "none";
-  mostrarTelaEstoque();
+  mostrarTela('estoque');
 });
 
 document.getElementById("btn-duplicatas").addEventListener("click", () => {
-  document.getElementById("menu-principal").style.display = "none";
-  document.getElementById("tela-duplicatas").style.display = "block";
-  carregarDuplicatas();
+  mostrarTela('duplicatas');
 });
 
 // ➕ Criar nova promissória
@@ -380,10 +374,24 @@ document.getElementById("form-estoque").addEventListener("submit", async (e) => 
   }
 });
 
-function mostrarTelaEstoque() {
-  document.getElementById("tela-estoque").style.display = "block";
-  carregarProdutos();
-  carregarEstoque();
+function mostrarTela(tipo) {
+  document.getElementById("menu-principal").style.display = "none";
+  document.getElementById("conteudo-sistema").style.display = "none";
+  document.getElementById("tela-estoque").style.display = "none";
+  document.getElementById("tela-duplicatas").style.display = "none";
+
+  if (tipo === "promissorias") {
+    document.getElementById("conteudo-sistema").style.display = "block";
+    carregarPromissorias();
+    criarBotaoMostrarPagas();
+  } else if (tipo === "estoque") {
+    document.getElementById("tela-estoque").style.display = "block";
+    carregarProdutos();
+    carregarEstoque();
+  } else if (tipo === "duplicatas") {
+    document.getElementById("tela-duplicatas").style.display = "block";
+    carregarDuplicatas();
+  }
 }
 
 function voltarMenu() {
@@ -591,6 +599,13 @@ function solicitarEntrada(texto, valorPadrao = "") {
     ok.onclick = () => fechar(input.value.trim());
     cancelar.onclick = () => fechar(null);
   });
+}
+
+function ocultarTodasAsTelas() {
+  document.getElementById("menu-principal").style.display = "none";
+  document.getElementById("conteudo-sistema").style.display = "none";
+  document.getElementById("tela-estoque").style.display = "none";
+  document.getElementById("tela-duplicatas").style.display = "none";
 }
 
 aguardarBackend();
