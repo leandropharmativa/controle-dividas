@@ -7,13 +7,20 @@ body {
   color: #333;
 }
 
-h1 {
+h1, h2 {
   text-align: center;
-  font-size: 1.8rem;
-  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
-#form-promissoria {
+h3 {
+  font-size: 1.2rem;
+  margin-top: 1.5rem;
+}
+
+#form-promissoria,
+#form-estoque,
+#form-duplicata {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -21,7 +28,12 @@ h1 {
 }
 
 #form-promissoria input,
-#form-promissoria button {
+#form-promissoria button,
+#form-estoque input,
+#form-estoque select,
+#form-estoque button,
+#form-duplicata input,
+#form-duplicata button {
   padding: 0.6rem;
   font-size: 1rem;
 }
@@ -44,7 +56,7 @@ h1 {
   background-color: #45a049;
 }
 
-/* ✅ Lista de promissórias */
+/* ✅ Lista de promissórias e estoque */
 ul {
   list-style: none;
   padding: 0;
@@ -82,24 +94,33 @@ li button {
 /* 🎨 Cores dos botões */
 li button:nth-child(1) { background-color: #4caf50; color: white; } /* ✓ Quitar */
 li button:nth-child(2) { background-color: #2196f3; color: white; } /* 💬 Histórico */
-li button:nth-child(3) { background-color: #ff9800; color: white; } /* + Parcial */
+li button:nth-child(3) { background-color: #ff9800; color: white; } /* - Parcial */
+li button:nth-child(4) { background-color: #9c27b0; color: white; } /* +💸 Adicionar */
 
 /* 🧾 Pagamentos parciais (histórico) */
 .pagamentos {
   margin-top: 0.5rem;
   font-size: 0.95rem;
   color: #555;
-  flex-basis: 100%;  /* 🆕 força quebra para nova linha */
+  flex-basis: 100%;
 }
 
+/* 📋 Botões do menu principal */
 .btn-menu {
-  padding: 12px 20px;
-  margin: 8px;
-  font-size: 1rem;
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 0.5rem auto;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
   border: none;
   border-radius: 8px;
   background-color: #d9d9d9;
   cursor: pointer;
-  font-weight: bold;
+  transition: background-color 0.2s ease;
 }
 
+.btn-menu:hover {
+  background-color: #ccc;
+}
