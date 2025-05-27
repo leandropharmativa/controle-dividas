@@ -278,6 +278,7 @@ form {
 
 /* ⬅ Botão voltar em forma de bolinha */
 .btn-voltar-circulo {
+  display: none;
   position: fixed;
   bottom: 24px;
   right: 24px;
