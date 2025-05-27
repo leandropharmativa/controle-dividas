@@ -50,16 +50,22 @@ document.getElementById("btn-acessar").addEventListener("click", async () => {
 });
 
 // 👁 Escolha do módulo após login
-btnPromissorias.addEventListener('click', () => {
-  mostrarTela('promissorias');
+document.getElementById("btn-promissorias").addEventListener("click", () => {
+  document.getElementById("menu-principal").style.display = "none";
+  document.getElementById("conteudo-sistema").style.display = "block";
+  carregarPromissorias();
+  criarBotaoMostrarPagas();
 });
 
-btnEstoque.addEventListener('click', () => {
-  mostrarTela('estoque');
+document.getElementById("btn-estoque").addEventListener("click", () => {
+  document.getElementById("menu-principal").style.display = "none";
+  mostrarTelaEstoque();
 });
 
-btnDuplicatas.addEventListener('click', () => {
-  mostrarTela('duplicatas');
+document.getElementById("btn-duplicatas").addEventListener("click", () => {
+  document.getElementById("menu-principal").style.display = "none";
+  document.getElementById("tela-duplicatas").style.display = "block";
+  carregarDuplicatas();
 });
 
 // ➕ Criar nova promissória
@@ -86,16 +92,16 @@ form.addEventListener("submit", async (e) => {
 
 // ✅ Marcar como quitada
 async function quitarPromissoria(id) {
-  if (!(await confirmar("Deseja realmente marcar como quitada?"))) return;
+  if (!confirm("Deseja realmente marcar como quitada?")) return;
   await fetch(`${API_URL}/${id}/quitar`, { method: "PUT" });
   carregarPromissorias();
 }
 
 // ➖ Pagamento parcial
 async function registrarPagamento(id, nome) {
-  const valor = await solicitarEntrada("Informe o valor pago:");
+  const valor = prompt("Informe o valor pago:");
   if (!valor) return;
-  const observacao = await solicitarEntrada("Alguma observação?") || "";
+  const observacao = prompt("Alguma observação?") || "";
   const data = new Date().toISOString().split("T")[0];
 
   await fetch(PAGAMENTO_URL, {
@@ -110,9 +116,9 @@ async function registrarPagamento(id, nome) {
 
 // 💸 Adicionar valor
 async function adicionarValor(id, nome) {
-  const valor = await solicitarEntrada("Informe o valor adicional:");
+  const valor = prompt("Informe o valor adicional:");
   if (!valor || isNaN(valor)) return;
-  const observacao = await solicitarEntrada("Alguma observação?") || "";
+  const observacao = prompt("Alguma observação?") || "";
 
   await fetch(`${API_URL}/${id}/adicionar`, {
     method: "PUT",
@@ -374,22 +380,10 @@ document.getElementById("form-estoque").addEventListener("submit", async (e) => 
   }
 });
 
-function mostrarTela(tipo) {
-  ocultarTodasAsTelas();
-  if (tipo === 'promissorias') {
-    conteudoSistema.style.display = 'block';
-  } else if (tipo === 'estoque') {
-    telaEstoque.style.display = 'block';
-  } else if (tipo === 'duplicatas') {
-    telaDuplicatas.style.display = 'block';
-  }
-}
-
-function ocultarTodasAsTelas() {
-  menuPrincipal.style.display = 'none';
-  conteudoSistema.style.display = 'none';
-  telaEstoque.style.display = 'none';
-  telaDuplicatas.style.display = 'none';
+function mostrarTelaEstoque() {
+  document.getElementById("tela-estoque").style.display = "block";
+  carregarProdutos();
+  carregarEstoque();
 }
 
 function voltarMenu() {
@@ -515,7 +509,7 @@ async function carregarDuplicatas() {
           btn.textContent = "✓ Quitar";
           btn.style.marginLeft = "1rem";
           btn.onclick = async () => {
-            if (await confirmar("Confirmar quitação da duplicata?")) {
+            if (confirm("Confirmar quitação da duplicata?")) {
               await fetch(`https://controle-dividas.onrender.com/duplicatas/${d.id}/quitar`, {
                 method: "PUT",
               });
