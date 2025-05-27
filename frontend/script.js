@@ -400,20 +400,29 @@ async function carregarEstoque() {
     }
 
     const ul = document.createElement("ul");
+    let totalGeral = 0;
 
     dados.forEach(reg => {
-      const total = reg.valorUnitario && reg.quantidade
-        ? (parseFloat(reg.valorUnitario) * parseFloat(reg.quantidade)).toFixed(2)
-        : "-";
       const li = document.createElement("li");
-      li.innerHTML = `<strong>${reg.produto}</strong> - ${reg.quantidade} unidades
-        ${reg.valorUnitario ? ` | R$${reg.valorUnitario} un.` : ""} 
-        ${total !== "-" ? ` | Total: R$${total}` : ""}`;
+
+      const qtd = parseFloat(reg.quantidade) || 0;
+      const preco = parseFloat(reg.preco || 0);
+      const total = qtd * preco;
+      totalGeral += total;
+
+      li.innerHTML = `<strong>${reg.produto}</strong> - ${qtd} und x R$${preco.toFixed(2)} = <strong>R$${total.toFixed(2)}</strong>`;
       ul.appendChild(li);
     });
 
     lista.innerHTML = "";
     lista.appendChild(ul);
+
+    // ➕ Exibe total geral
+    const totalDiv = document.createElement("div");
+    totalDiv.style.marginTop = "1rem";
+    totalDiv.style.fontWeight = "bold";
+    totalDiv.textContent = `📦 Valor total do estoque: R$${totalGeral.toFixed(2)}`;
+    lista.appendChild(totalDiv);
   } catch (err) {
     lista.innerHTML = "<p>Erro ao carregar estoque.</p>";
   }
