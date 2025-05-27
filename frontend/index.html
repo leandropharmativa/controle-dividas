@@ -59,6 +59,28 @@
 
   </div>
 
+  <!-- 📦 Tela de Controle de Estoque -->
+<div id="tela-estoque" style="display: none;">
+  <h1>Controle de Estoque</h1>
+
+  <!-- 📋 Formulário para adicionar item -->
+  <form id="form-estoque">
+    <input name="produto" placeholder="Produto" required />
+    <input name="quantidade" type="number" placeholder="Quantidade" required />
+    <select name="tipo" required>
+      <option value="entrada">Entrada</option>
+      <option value="saida">Saída</option>
+    </select>
+    <button type="submit">Registrar</button>
+  </form>
+
+  <!-- 📊 Lista de produtos -->
+  <h2>Estoque Atual</h2>
+  <ul id="lista-estoque"></ul>
+
+  <button onclick="voltarMenu()">⬅ Voltar ao menu</button>
+</div>
+
   <!-- 🔧 Scripts -->
   <script src="script.js"></script>
 </body>
