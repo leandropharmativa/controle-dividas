@@ -13,75 +13,85 @@
   <h2>⏳ Iniciando sistema...</h2>
   <p>Aguarde, estamos acordando o servidor...</p>
 </div>
-  
-  <!-- 🔐 Tela de bloqueio -->
-  <div id="tela-senha">
-    <h2>🔐 Acesso restrito</h2>
-    <input type="password" id="campo-senha" placeholder="Digite a senha" />
-    <button id="btn-acessar">Acessar</button>
-    <p id="erro-senha" style="color:red; display:none;">Senha incorreta</p>
-  </div>
 
-  <!-- 🧭 Menu principal após autenticação -->
+<!-- 🔐 Tela de bloqueio -->
+<div id="tela-senha" style="display: none; text-align: center;">
+  <h2>🔐 Acesso restrito</h2>
+  <input type="password" id="campo-senha" placeholder="Digite a senha" />
+  <button id="btn-acessar">Acessar</button>
+  <p id="erro-senha" style="color:red; display:none;">Senha incorreta</p>
+</div>
+
+<!-- 🧭 Menu principal -->
 <div id="menu-principal" style="display: none; text-align: center;">
   <h2>Escolha uma função:</h2>
   <button id="btn-promissorias" class="btn-menu">📜 Controle de Promissórias</button>
   <button id="btn-estoque" class="btn-menu">📦 Controle de Estoque</button>
 </div>
 
-  <!-- 🔓 Conteúdo do sistema (inicialmente oculto) -->
-  <div id="conteudo-sistema" style="display: none;">
+<!-- 📜 Tela de Controle de Promissórias -->
+<div id="conteudo-sistema" style="display: none;">
+  <h1>Controle de Promissórias</h1>
+  <h2>Lista de promissórias ativas</h2>
+  <p>Total de dívidas: <strong id="total-dividas">R$0,00</strong></p>
 
-    <h1>Controle de Promissórias</h1>
-    <h2>Lista de promissórias ativas</h2>
-    <p>Total de dívidas: <strong id="total-dividas">R$0,00</strong></p>
-
-    <!-- 🔍 Campo de filtro -->
-    <div id="filtros" style="margin-bottom: 1rem;">
-      <input type="text" id="filtro-nome" placeholder="🔍 Buscar nome..." />
-    </div>
-
-    <!-- 📋 Formulário -->
-    <form id="form-promissoria">
-      <input name="nome" placeholder="Nome" required />
-      <input name="telefone" placeholder="Telefone" required />
-      <input name="valor" placeholder="Valor" type="number" required />
-      <input name="data" placeholder="Data (AAAA-MM-DD)" type="date" required />
-      <input name="observacoes" placeholder="Observações" />
-      <button type="submit" class="btn-adicionar">Adicionar</button>
-    </form>
-
-    <!-- 📌 Lista de promissórias ativas -->
-    <ul id="lista-promissorias"></ul>
-
-    <!-- 📜 Lista de promissórias pagas (via JS) -->
-    <div id="lista-pagas"></div>
-
+  <!-- 🔍 Campo de filtro -->
+  <div id="filtros" style="margin-bottom: 1rem;">
+    <input type="text" id="filtro-nome" placeholder="🔍 Buscar nome..." />
   </div>
 
-  <!-- 📦 Tela de Controle de Estoque -->
+  <!-- 📋 Formulário -->
+  <form id="form-promissoria">
+    <input name="nome" placeholder="Nome" required />
+    <input name="telefone" placeholder="Telefone" required />
+    <input name="valor" placeholder="Valor" type="number" required />
+    <input name="data" placeholder="Data (AAAA-MM-DD)" type="date" required />
+    <input name="observacoes" placeholder="Observações" />
+    <button type="submit" class="btn-adicionar">Adicionar</button>
+  </form>
+
+  <!-- 📌 Lista de promissórias ativas -->
+  <ul id="lista-promissorias"></ul>
+
+  <!-- 📜 Lista de promissórias pagas (via JS) -->
+  <div id="lista-pagas"></div>
+
+  <!-- 🔙 Voltar -->
+  <div style="text-align: center; margin-top: 2rem;">
+    <button onclick="voltarMenu()">⬅ Voltar ao menu</button>
+  </div>
+</div>
+
+<!-- 📦 Tela de Controle de Estoque -->
 <div id="tela-estoque" style="display: none;">
   <h1>Controle de Estoque</h1>
 
-  <!-- 📋 Formulário para adicionar item -->
-  <form id="form-estoque">
-    <input name="produto" placeholder="Produto" required />
+  <!-- 📋 Formulário para registrar movimentação -->
+  <form id="form-estoque" style="margin-bottom: 2rem;">
+    <select name="produto" id="select-produto" required>
+      <option value="">🔽 Selecione um produto</option>
+      <!-- Opções virão via script.js -->
+    </select>
     <input name="quantidade" type="number" placeholder="Quantidade" required />
     <select name="tipo" required>
       <option value="entrada">Entrada</option>
       <option value="saida">Saída</option>
     </select>
+    <input name="justificativa" placeholder="Justificativa" />
     <button type="submit">Registrar</button>
   </form>
 
-  <!-- 📊 Lista de produtos -->
+  <!-- 📊 Lista de registros (futuramente) -->
   <h2>Estoque Atual</h2>
   <ul id="lista-estoque"></ul>
 
-  <button onclick="voltarMenu()">⬅ Voltar ao menu</button>
+  <!-- 🔙 Voltar -->
+  <div style="text-align: center; margin-top: 2rem;">
+    <button onclick="voltarMenu()">⬅ Voltar ao menu</button>
+  </div>
 </div>
 
-  <!-- 🔧 Scripts -->
-  <script src="script.js"></script>
+<!-- 🔧 Scripts -->
+<script src="script.js"></script>
 </body>
 </html>
