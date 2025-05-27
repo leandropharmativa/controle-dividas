@@ -396,4 +396,33 @@ function voltarMenu() {
   document.getElementById("menu-principal").style.display = "block";
 }
 
+async function carregarEstoque() {
+  const lista = document.getElementById("lista-estoque");
+  lista.innerHTML = "<p>Carregando registros...</p>";
+
+  try {
+    const res = await fetch("https://controle-dividas.onrender.com/estoque");
+    const dados = await res.json();
+
+    if (dados.length === 0) {
+      lista.innerHTML = "<p>Nenhum registro encontrado.</p>";
+      return;
+    }
+
+    const ul = document.createElement("ul");
+
+    dados.forEach(reg => {
+      const li = document.createElement("li");
+      li.innerHTML = `<strong>${reg.produto}</strong> - ${reg.quantidade} (${reg.tipo}) em ${reg.data}` +
+        (reg.justificativa ? ` – ${reg.justificativa}` : "");
+      ul.appendChild(li);
+    });
+
+    lista.innerHTML = "";
+    lista.appendChild(ul);
+  } catch (err) {
+    lista.innerHTML = "<p>Erro ao carregar estoque.</p>";
+  }
+}
+
 aguardarBackend();
