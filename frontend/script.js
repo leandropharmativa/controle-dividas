@@ -92,16 +92,16 @@ form.addEventListener("submit", async (e) => {
 
 // ✅ Marcar como quitada
 async function quitarPromissoria(id) {
-  if (!confirm("Deseja realmente marcar como quitada?")) return;
+  if (!(await confirmar("Deseja realmente marcar como quitada?"))) return;
   await fetch(`${API_URL}/${id}/quitar`, { method: "PUT" });
   carregarPromissorias();
 }
 
 // ➖ Pagamento parcial
 async function registrarPagamento(id, nome) {
-  const valor = prompt("Informe o valor pago:");
+  const valor = await solicitarEntrada("Informe o valor pago:");
   if (!valor) return;
-  const observacao = prompt("Alguma observação?") || "";
+  const observacao = await solicitarEntrada("Alguma observação?") || "";
   const data = new Date().toISOString().split("T")[0];
 
   await fetch(PAGAMENTO_URL, {
@@ -116,9 +116,9 @@ async function registrarPagamento(id, nome) {
 
 // 💸 Adicionar valor
 async function adicionarValor(id, nome) {
-  const valor = prompt("Informe o valor adicional:");
+  const valor = await solicitarEntrada("Informe o valor adicional:");
   if (!valor || isNaN(valor)) return;
-  const observacao = prompt("Alguma observação?") || "";
+  const observacao = await solicitarEntrada("Alguma observação?") || "";
 
   await fetch(`${API_URL}/${id}/adicionar`, {
     method: "PUT",
@@ -509,7 +509,7 @@ async function carregarDuplicatas() {
           btn.textContent = "✓ Quitar";
           btn.style.marginLeft = "1rem";
           btn.onclick = async () => {
-            if (confirm("Confirmar quitação da duplicata?")) {
+            if (await confirmar("Confirmar quitação da duplicata?")) {
               await fetch(`https://controle-dividas.onrender.com/duplicatas/${d.id}/quitar`, {
                 method: "PUT",
               });
