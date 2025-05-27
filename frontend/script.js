@@ -469,45 +469,69 @@ async function carregarDuplicatas() {
     const res = await fetch("https://controle-dividas.onrender.com/duplicatas");
     const duplicatas = await res.json();
 
-    if (duplicatas.length === 0) {
-      lista.innerHTML = "<p>Nenhuma duplicata registrada.</p>";
-      return;
-    }
+    // Função para formatar datas no padrão BR
+    const formatarData = (iso) => {
+      const partes = iso.split("-");
+      return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    };
 
-    const ul = document.createElement("ul");
+    // Ordenar por data de vencimento (asc)
+    duplicatas.sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento));
 
-    duplicatas.forEach(d => {
-      const li = document.createElement("li");
-      const dataBR = d.vencimento.split("-").reverse().join("/");
-      li.innerHTML = `${d.produto} - R$${parseFloat(d.valor).toFixed(2)} - vence em ${dataBR} - ${d.status}`;
+    const pendentes = duplicatas.filter(d => d.status !== "paga");
+    const pagas = duplicatas.filter(d => d.status === "paga");
 
-      if (d.status === "pendente") {
-        const btnQuitar = document.createElement("button");
-        btnQuitar.textContent = "✓ Quitar";
-        btnQuitar.style.marginLeft = "1rem";
-        btnQuitar.onclick = async () => {
-          await fetch(`https://controle-dividas.onrender.com/duplicatas/${d.id}/quitar`, {
-            method: "PUT"
-          });
-          alert("Duplicata marcada como paga.");
-          carregarDuplicatas();
-        };
-        li.appendChild(btnQuitar);
+    const criarSecao = (titulo, duplicatas, corIcone) => {
+      const div = document.createElement("div");
+      const h3 = document.createElement("h3");
+      h3.textContent = titulo;
+      div.appendChild(h3);
+
+      if (duplicatas.length === 0) {
+        const p = document.createElement("p");
+        p.textContent = "Nenhuma duplicata nesta categoria.";
+        div.appendChild(p);
+        return div;
       }
 
-      if (d.observacoes) {
-        const obs = document.createElement("div");
-        obs.style.color = "#666";
-        obs.textContent = `Obs.: ${d.observacoes}`;
-        li.appendChild(obs);
-      }
+      const ul = document.createElement("ul");
+      duplicatas.forEach(d => {
+        const li = document.createElement("li");
+        const venc = formatarData(d.vencimento);
+        const obs = d.observacoes ? ` — Obs.: ${d.observacoes}` : "";
+        const icone = d.status === "paga" ? "🟢" : "🔴";
 
-      ul.appendChild(li);
-    });
+        li.innerHTML = `${icone} <strong>${d.produto}</strong> — R$${parseFloat(d.valor).toFixed(2)} — Venc.: ${venc}${obs}`;
 
+        if (d.status !== "paga") {
+          const btn = document.createElement("button");
+          btn.textContent = "✓ Quitar";
+          btn.style.marginLeft = "1rem";
+          btn.onclick = async () => {
+            if (confirm("Confirmar quitação da duplicata?")) {
+              await fetch(`https://controle-dividas.onrender.com/duplicatas/${d.id}/quitar`, {
+                method: "PUT",
+              });
+              carregarDuplicatas();
+            }
+          };
+          li.appendChild(btn);
+        }
+
+        ul.appendChild(li);
+      });
+
+      div.appendChild(ul);
+      return div;
+    };
+
+    // Montar na tela
     lista.innerHTML = "";
-    lista.appendChild(ul);
+    lista.appendChild(criarSecao("🔴 Duplicatas Pendentes", pendentes));
+    lista.appendChild(criarSecao("🟢 Duplicatas Pagas", pagas));
+
   } catch (err) {
+    console.error(err);
     lista.innerHTML = "<p>Erro ao carregar duplicatas.</p>";
   }
 }
