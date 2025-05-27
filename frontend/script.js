@@ -548,4 +548,49 @@ function exibirMensagem(texto, tipo = "sucesso") {
   }, 4000);
 }
 
+function confirmar(texto) {
+  return new Promise(resolve => {
+    const modal = document.getElementById("modal-confirmacao");
+    document.getElementById("confirmacao-texto").textContent = texto;
+    modal.style.display = "flex";
+
+    const sim = document.getElementById("confirmar-sim");
+    const nao = document.getElementById("confirmar-nao");
+
+    const fechar = (res) => {
+      modal.style.display = "none";
+      sim.onclick = null;
+      nao.onclick = null;
+      resolve(res);
+    };
+
+    sim.onclick = () => fechar(true);
+    nao.onclick = () => fechar(false);
+  });
+}
+
+function solicitarEntrada(texto, valorPadrao = "") {
+  return new Promise(resolve => {
+    const modal = document.getElementById("modal-prompt");
+    const input = document.getElementById("prompt-input");
+    document.getElementById("prompt-texto").textContent = texto;
+    input.value = valorPadrao;
+    modal.style.display = "flex";
+    input.focus();
+
+    const ok = document.getElementById("prompt-ok");
+    const cancelar = document.getElementById("prompt-cancelar");
+
+    const fechar = (res) => {
+      modal.style.display = "none";
+      ok.onclick = null;
+      cancelar.onclick = null;
+      resolve(res);
+    };
+
+    ok.onclick = () => fechar(input.value.trim());
+    cancelar.onclick = () => fechar(null);
+  });
+}
+
 aguardarBackend();
