@@ -20,12 +20,12 @@ async function aguardarBackend() {
 
   while (true) {
     try {
-      const res = await fetch(STATUS_URL, { timeout: 10000 });
+      const res = await fetch(STATUS_URL);
       if (res.ok) break;
     } catch (err) {
       console.log("Backend ainda não respondeu...");
     }
-    await new Promise(r => setTimeout(r, 1500)); // espera 1.5s
+    await new Promise(r => setTimeout(r, 1500));
   }
 
   document.getElementById("tela-loading").style.display = "none";
@@ -39,14 +39,23 @@ document.getElementById("btn-acessar").addEventListener("click", () => {
   const input = document.getElementById("campo-senha").value;
   if (input === SENHA) {
     document.getElementById("tela-senha").style.display = "none";
-    document.getElementById("conteudo-sistema").style.display = "block";
-
-    // ✅ Só agora carregamos o conteúdo do sistema
-    carregarPromissorias();
-    criarBotaoMostrarPagas();
+    document.getElementById("menu-principal").style.display = "block";
   } else {
     document.getElementById("erro-senha").style.display = "block";
   }
+});
+
+// 👁 Escolha do módulo após login
+document.getElementById("btn-promissorias").addEventListener("click", () => {
+  document.getElementById("menu-principal").style.display = "none";
+  document.getElementById("conteudo-sistema").style.display = "block";
+  carregarPromissorias();
+  criarBotaoMostrarPagas();
+});
+
+document.getElementById("btn-estoque").addEventListener("click", () => {
+  document.getElementById("menu-principal").style.display = "none";
+  mostrarTelaEstoque();
 });
 
 // ➕ Criar nova promissória
@@ -167,7 +176,7 @@ async function mostrarPagamentos(id, container) {
   container.appendChild(ul);
 }
 
-// 🔁 Carrega promissórias ativas e gerencia lista de pagas
+// 🔁 Carrega promissórias ativas
 async function carregarPromissorias() {
   const filtroNome = document.getElementById("filtro-nome").value;
 
@@ -247,7 +256,7 @@ function renderPromissoria(p) {
   return li;
 }
 
-// 👁 Botão de "Mostrar promissórias pagas"
+// 👁 Botão "Mostrar promissórias pagas"
 function criarBotaoMostrarPagas() {
   const container = document.createElement("div");
   container.style.textAlign = "center";
@@ -317,7 +326,19 @@ async function mostrarPagas(apenasFiltradas = false) {
   divPagas.appendChild(ul);
 }
 
-// 🧭 Atualização dinâmica ao digitar
+// 🧭 Atualização ao digitar
 document.getElementById("filtro-nome").addEventListener("input", carregarPromissorias);
-aguardarBackend();
 
+// 📦 Controle de Estoque (início da estrutura)
+function mostrarTelaEstoque() {
+  document.getElementById("tela-estoque").style.display = "block";
+  carregarEstoque?.(); // se existir
+}
+
+function voltarMenu() {
+  document.getElementById("tela-estoque").style.display = "none";
+  document.getElementById("conteudo-sistema").style.display = "none";
+  document.getElementById("menu-principal").style.display = "block";
+}
+
+aguardarBackend();
