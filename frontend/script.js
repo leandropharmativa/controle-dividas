@@ -380,10 +380,20 @@ document.getElementById("form-estoque").addEventListener("submit", async (e) => 
   }
 });
 
-function mostrarTelaEstoque() {
-  document.getElementById("tela-estoque").style.display = "block";
-  carregarProdutos();
-  carregarEstoque();
+function mostrarTela(tipo) {
+  ocultarTodasAsTelas();
+
+  if (tipo === 'promissorias') {
+    document.getElementById('conteudo-sistema').style.display = 'block';
+    carregarPromissorias(); // ← carrega lista de promissórias
+  } else if (tipo === 'estoque') {
+    document.getElementById('tela-estoque').style.display = 'block';
+    carregarProdutos();     // ← preenche dropdown de produtos
+    carregarEstoque();      // ← carrega a lista de estoque atual
+  } else if (tipo === 'duplicatas') {
+    document.getElementById('tela-duplicatas').style.display = 'block';
+    carregarDuplicatas();   // ← carrega duplicatas lançadas
+  }
 }
 
 function voltarMenu() {
