@@ -24,6 +24,7 @@
 
 <!-- 🧭 Menu principal -->
 <div id="menu-principal" style="display: none; text-align: center;">
+  <h2>Escolha uma função:</h2>
   <button id="btn-promissorias" class="btn-menu">📜 Controle de Promissórias</button>
   <button id="btn-estoque" class="btn-menu">📦 Controle de Estoque</button>
   <button id="btn-duplicatas" class="btn-menu">💳 Controle de Duplicatas</button>
@@ -31,8 +32,7 @@
 
 <!-- 📜 Tela de Controle de Promissórias -->
 <div id="conteudo-sistema" style="display: none;">
-  <h1>Controle de Promissórias</h1>
-  <h2>Lista de promissórias ativas</h2>
+  <h2>Controle de Promissórias</h2>
   <p>Total de dívidas: <strong id="total-dividas">R$0,00</strong></p>
 
   <!-- 🔍 Campo de filtro -->
@@ -53,15 +53,12 @@
   <!-- 📌 Lista de promissórias ativas -->
   <ul id="lista-promissorias"></ul>
 
-<div id="container-botao-pagas" style="text-align: center; margin-top: 2rem;">
-  <button id="btn-pagas" style="padding: 8px 16px; border: none; border-radius: 6px; background: #ccc; cursor: pointer; font-weight: bold;">
-    👁 Mostrar promissórias pagas
-  </button>
-  <div id="lista-pagas"></div>
-</div>
-
-  <!-- 📜 Lista de promissórias pagas (via JS) -->
-  <div id="lista-pagas"></div>
+  <div id="container-botao-pagas" style="text-align: center; margin-top: 2rem;">
+    <button id="btn-pagas" style="padding: 8px 16px; border: none; border-radius: 6px; background: #ccc; cursor: pointer; font-weight: bold;">
+      👁 Mostrar promissórias pagas
+    </button>
+    <div id="lista-pagas"></div>
+  </div>
 
   <!-- 🔙 Voltar -->
   <div style="text-align: center; margin-top: 2rem;">
@@ -71,13 +68,12 @@
 
 <!-- 📦 Tela de Controle de Estoque -->
 <div id="tela-estoque" style="display: none;">
-  <h1>Controle de Estoque</h1>
+  <h2>Controle de Estoque</h2>
 
   <!-- 📋 Formulário para registrar movimentação -->
   <form id="form-estoque" style="margin-bottom: 2rem;">
     <select name="produto" id="select-produto" required>
       <option value="">🔽 Selecione um produto</option>
-      <!-- Opções virão via script.js -->
     </select>
     <input name="quantidade" type="number" placeholder="Quantidade" required />
     <select name="tipo" required>
@@ -88,8 +84,7 @@
     <button type="submit">Registrar</button>
   </form>
 
-  <!-- 📊 Lista de registros (futuramente) -->
-  <h2>Estoque Atual</h2>
+  <h3>Estoque Atual</h3>
   <ul id="lista-estoque"></ul>
 
   <!-- 🔙 Voltar -->
@@ -100,21 +95,19 @@
 
 <!-- 💳 Tela de Controle de Duplicatas -->
 <div id="tela-duplicatas" style="display: none;">
-  <h1>Controle de Duplicatas</h1>
+  <h2>Controle de Duplicatas</h2>
 
-  <!-- 📋 Formulário para lançar nova duplicata -->
   <form id="form-duplicata" style="margin-bottom: 2rem;">
     <input name="produto" placeholder="Produto / Descrição" required />
     <input name="valor" type="number" step="0.01" placeholder="Valor do boleto" required />
-    <input name="vencimento" type="date" placeholder="Data de vencimento" required />
+    <input name="vencimento" type="date" required />
     <input name="observacoes" placeholder="Observações (opcional)" />
     <button type="submit">Lançar Duplicata</button>
   </form>
 
-  <h2>Duplicatas lançadas</h2>
+  <h3>Duplicatas lançadas</h3>
   <ul id="lista-duplicatas"></ul>
 
-  <!-- 🔙 Voltar -->
   <div style="text-align: center; margin-top: 2rem;">
     <button onclick="voltarMenu()">⬅ Voltar ao menu</button>
   </div>
