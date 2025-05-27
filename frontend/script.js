@@ -334,9 +334,60 @@ async function mostrarPagas(apenasFiltradas = false) {
 document.getElementById("filtro-nome").addEventListener("input", carregarPromissorias);
 
 // 📦 Controle de Estoque (início da estrutura)
+
+async function carregarProdutos() {
+  const select = document.getElementById("select-produto");
+  select.innerHTML = '<option value="">🔽 Selecione um produto</option>';
+
+  try {
+    const res = await fetch("https://controle-dividas.onrender.com/produtos");
+    const produtos = await res.json();
+
+    produtos.forEach(produto => {
+      const option = document.createElement("option");
+      option.value = produto;
+      option.textContent = produto;
+      select.appendChild(option);
+    });
+  } catch (err) {
+    alert("Erro ao carregar produtos.");
+  }
+}
+
+document.getElementById("form-estoque").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+
+  const produto = form.produto.value;
+  const quantidade = form.quantidade.value;
+  const tipo = form.tipo.value;
+  const justificativa = form.justificativa.value;
+
+  if (!produto || !quantidade || !tipo) {
+    alert("Preencha todos os campos obrigatórios.");
+    return;
+  }
+
+  try {
+    await fetch("https://controle-dividas.onrender.com/estoque", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ produto, quantidade, tipo, justificativa }),
+    });
+
+    alert("Movimentação registrada com sucesso.");
+    form.reset();
+    form.produto.focus();
+    carregarEstoque(); // caso queira atualizar a lista
+  } catch (err) {
+    alert("Erro ao registrar movimentação.");
+  }
+});
+
 function mostrarTelaEstoque() {
   document.getElementById("tela-estoque").style.display = "block";
-  carregarEstoque?.(); // se existir
+  carregarProdutos();
+  carregarEstoque?.(); // (opcional, se quiser exibir lista futura)
 }
 
 function voltarMenu() {
