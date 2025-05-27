@@ -6,7 +6,10 @@ const cors = require('cors');
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ['https://controle-dividas-frontend.onrender.com'],
+  credentials: true
+}));
 app.use(express.json());
 
 const SHEET_ID = process.env.GOOGLE_SHEET_ID;
