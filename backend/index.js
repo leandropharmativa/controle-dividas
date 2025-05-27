@@ -341,3 +341,36 @@ app.post('/verificar-senha', async (req, res) => {
   }
 });
 
+// retorna lista de produtos:
+app.get('/produtos', async (req, res) => {
+  const sheets = await getSheetsClient();
+  const result = await sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range: 'produtos!A2:A',
+  });
+
+  const produtos = result.data.values?.map(r => r[0]).filter(Boolean) || [];
+  res.json(produtos);
+});
+
+//registra entrada ou saída:
+app.post('/estoque', async (req, res) => {
+  const { produto, quantidade, tipo, justificativa } = req.body;
+  if (!produto || !quantidade || !tipo) return res.status(400).send("Campos obrigatórios ausentes.");
+
+  const sheets = await getSheetsClient();
+  const data = new Date().toISOString().split('T')[0];
+
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: SHEET_ID,
+    range: 'estoque!A:E',
+    valueInputOption: 'RAW',
+    resource: {
+      values: [[produto, quantidade, tipo, data, justificativa || ""]],
+    },
+  });
+
+  res.sendStatus(201);
+});
+
+
