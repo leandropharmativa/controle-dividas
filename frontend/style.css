@@ -38,6 +38,16 @@ h3 {
   font-size: 1rem;
 }
 
+/* ✅ Campo de senha */
+#campo-senha {
+  width: 240px;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
 /* ✅ Botão "Adicionar" no formulário */
 .btn-adicionar {
   background-color: #4caf50;
@@ -112,16 +122,33 @@ li button:nth-child(4) { background-color: #9c27b0; color: white; } /* +💸 Adi
   max-width: 300px;
   margin: 0.5rem auto;
   padding: 12px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: bold;
   border: none;
   border-radius: 8px;
-  background-color: #d9d9d9;
+  background-color: #f0f0f0;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  min-width: 220px;
 }
 
 .btn-menu:hover {
+  background-color: #ddd;
+}
+
+/* ✅ Botão "Mostrar promissórias pagas" */
+#btn-pagas {
+  padding: 12px 24px;
+  font-size: 1rem;
+  border-radius: 8px;
+  background-color: #e0e0e0;
+  color: #333;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+  min-width: 260px;
+}
+
+#btn-pagas:hover {
   background-color: #ccc;
 }
 
@@ -200,7 +227,8 @@ li button:nth-child(4) { background-color: #9c27b0; color: white; } /* +💸 Adi
   background-color: #ccc;
   color: #333;
 }
-/* 🧼 Estilo mais leve para inputs e formulários */
+
+/* 🧼 Inputs e selects */
 input, select {
   padding: 0.6rem 0.8rem;
   font-size: 1rem;
@@ -228,27 +256,15 @@ button {
   transition: background-color 0.2s ease;
 }
 
-/* Estilo para botões de ação principal */
-.btn-adicionar, .btn-ok {
-  background-color: #4caf50;
-  color: white;
-}
-
-.btn-adicionar:hover, .btn-ok:hover {
+.btn-ok:hover, .btn-adicionar:hover {
   background-color: #45a049;
-}
-
-/* Estilo para botões neutros/cancelar */
-.btn-cancelar {
-  background-color: #e0e0e0;
-  color: #333;
 }
 
 .btn-cancelar:hover {
   background-color: #ccc;
 }
 
-/* Estilo geral do formulário */
+/* 📃 Formulários */
 form {
   background-color: #fff;
   padding: 1rem;
@@ -260,19 +276,28 @@ form {
   gap: 12px;
 }
 
-/* Estilo unificado para botões de menu */
-.btn-menu {
-  padding: 0.8rem 1.4rem;
-  font-size: 1.05rem;
-  border-radius: 8px;
-  background-color: #f0f0f0;
+/* ⬅ Botão voltar em forma de bolinha */
+.btn-voltar-circulo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.4rem;
   font-weight: bold;
-  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  cursor: pointer;
   transition: background-color 0.2s ease;
-  min-width: 220px;
+  z-index: 10;
 }
 
-.btn-menu:hover {
-  background-color: #ddd;
+.btn-voltar-circulo:hover {
+  background-color: #45a049;
 }
-
