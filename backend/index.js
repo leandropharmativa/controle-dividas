@@ -438,8 +438,6 @@ app.get('/estoque', async (req, res) => {
   res.json(registros);
 });
 
-
-
 // 🔁 Histórico completo de movimentações
 app.get('/movimentacoes', async (req, res) => {
   const sheets = await getSheetsClient();
@@ -459,5 +457,72 @@ app.get('/movimentacoes', async (req, res) => {
 
   res.json(registros);
 });
+
+//Lançar nova duplicata:
+app.post('/duplicatas', async (req, res) => {
+  const { produto, valor, vencimento, observacoes } = req.body;
+  if (!produto || !valor || !vencimento) return res.status(400).send("Campos obrigatórios ausentes.");
+
+  const sheets = await getSheetsClient();
+  const id = `${Date.now()}`;
+  const status = "pendente";
+
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: SHEET_ID,
+    range: 'duplicatas!A:F',
+    valueInputOption: 'RAW',
+    resource: { values: [[id, produto, valor, vencimento, status, observacoes || ""]] },
+  });
+
+  res.sendStatus(201);
+});
+
+//Listar duplicatas:
+app.get('/duplicatas', async (req, res) => {
+  const sheets = await getSheetsClient();
+  const result = await sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range: 'duplicatas!A2:F',
+  });
+
+  const registros = (result.data.values || []).map(row => ({
+    id: row[0],
+    produto: row[1],
+    valor: row[2],
+    vencimento: row[3],
+    status: row[4],
+    observacoes: row[5],
+  }));
+
+  res.json(registros);
+});
+
+//Quitar duplicata:
+app.put('/duplicatas/:id/quitar', async (req, res) => {
+  const { id } = req.params;
+  const sheets = await getSheetsClient();
+  const range = 'duplicatas!A2:F';
+
+  const result = await sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range,
+  });
+
+  const rows = result.data.values || [];
+  const rowIndex = rows.findIndex(row => row[0] === id);
+  if (rowIndex === -1) return res.status(404).send("Duplicata não encontrada.");
+
+  rows[rowIndex][4] = "paga"; // Atualiza status
+
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: SHEET_ID,
+    range: `duplicatas!A${rowIndex + 2}:F${rowIndex + 2}`,
+    valueInputOption: 'RAW',
+    resource: { values: [rows[rowIndex]] },
+  });
+
+  res.sendStatus(200);
+});
+
 
 
