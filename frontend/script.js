@@ -375,10 +375,7 @@ document.getElementById("form-estoque").addEventListener("submit", async (e) => 
 });
 
 function mostrarTela(tipo) {
-  document.getElementById("menu-principal").style.display = "none";
-  document.getElementById("conteudo-sistema").style.display = "none";
-  document.getElementById("tela-estoque").style.display = "none";
-  document.getElementById("tela-duplicatas").style.display = "none";
+  ocultarTodasAsTelas(); // Limpa todas as seções antes de mostrar a certa
 
   if (tipo === "promissorias") {
     document.getElementById("conteudo-sistema").style.display = "block";
