@@ -373,4 +373,23 @@ app.post('/estoque', async (req, res) => {
   res.sendStatus(201);
 });
 
+//retorna os registros da aba estoque
+app.get('/estoque', async (req, res) => {
+  const sheets = await getSheetsClient();
+  const result = await sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range: 'estoque!A2:E',
+  });
+
+  const registros = (result.data.values || []).map(row => ({
+    produto: row[0],
+    quantidade: row[1],
+    tipo: row[2],
+    data: row[3],
+    justificativa: row[4],
+  }));
+
+  res.json(registros);
+});
+
 
