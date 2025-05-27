@@ -349,9 +349,9 @@ app.get('/produtos', async (req, res) => {
   const sheets = await getSheetsClient();
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId: SHEET_ID,
-    range: 'produtos!A2:A',
+    range: 'estoque!A2:A',
   });
-  const produtos = result.data.values?.map(r => r[0]).filter(Boolean) || [];
+  const produtos = [...new Set(result.data.values?.map(r => r[0]).filter(Boolean))];
   res.json(produtos);
 });
 
