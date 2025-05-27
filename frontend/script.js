@@ -50,22 +50,16 @@ document.getElementById("btn-acessar").addEventListener("click", async () => {
 });
 
 // 👁 Escolha do módulo após login
-document.getElementById("btn-promissorias").addEventListener("click", () => {
-  document.getElementById("menu-principal").style.display = "none";
-  document.getElementById("conteudo-sistema").style.display = "block";
-  carregarPromissorias();
-  criarBotaoMostrarPagas();
+btnPromissorias.addEventListener('click', () => {
+  mostrarTela('promissorias');
 });
 
-document.getElementById("btn-estoque").addEventListener("click", () => {
-  document.getElementById("menu-principal").style.display = "none";
-  mostrarTelaEstoque();
+btnEstoque.addEventListener('click', () => {
+  mostrarTela('estoque');
 });
 
-document.getElementById("btn-duplicatas").addEventListener("click", () => {
-  document.getElementById("menu-principal").style.display = "none";
-  document.getElementById("tela-duplicatas").style.display = "block";
-  carregarDuplicatas();
+btnDuplicatas.addEventListener('click', () => {
+  mostrarTela('duplicatas');
 });
 
 // ➕ Criar nova promissória
@@ -380,10 +374,22 @@ document.getElementById("form-estoque").addEventListener("submit", async (e) => 
   }
 });
 
-function mostrarTelaEstoque() {
-  document.getElementById("tela-estoque").style.display = "block";
-  carregarProdutos();
-  carregarEstoque();
+function mostrarTela(tipo) {
+  ocultarTodasAsTelas();
+  if (tipo === 'promissorias') {
+    conteudoSistema.style.display = 'block';
+  } else if (tipo === 'estoque') {
+    telaEstoque.style.display = 'block';
+  } else if (tipo === 'duplicatas') {
+    telaDuplicatas.style.display = 'block';
+  }
+}
+
+function ocultarTodasAsTelas() {
+  menuPrincipal.style.display = 'none';
+  conteudoSistema.style.display = 'none';
+  telaEstoque.style.display = 'none';
+  telaDuplicatas.style.display = 'none';
 }
 
 function voltarMenu() {
