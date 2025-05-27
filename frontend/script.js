@@ -110,7 +110,7 @@ async function registrarPagamento(id, nome) {
     body: JSON.stringify({ id, nome, valor, data, observacao }),
   });
 
-  alert("Pagamento registrado com sucesso!");
+  exibirMensagem("Pagamento registrado com sucesso!");
   carregarPromissorias();
 }
 
@@ -126,7 +126,7 @@ async function adicionarValor(id, nome) {
     body: JSON.stringify({ valorAdicional: valor, nome, observacao }),
   });
 
-  alert("Valor adicionado com sucesso!");
+  exibirMensagem("Valor adicionado com sucesso!");
   carregarPromissorias();
 }
 
@@ -338,7 +338,7 @@ async function carregarProdutos() {
       select.appendChild(option);
     });
   } catch (err) {
-    alert("Erro ao carregar produtos.");
+    exibirMensagem("Erro ao carregar produtos.", "erro");
   }
 }
 
@@ -353,14 +353,14 @@ document.getElementById("form-estoque").addEventListener("submit", async (e) => 
 
   // 🔒 Verifica se todos os campos estão preenchidos
   if (!produto || !quantidade || !tipo) {
-    alert("Preencha todos os campos obrigatórios.");
+    exibirMensagem("Preencha todos os campos obrigatórios.", "erro");
     return;
   }
 
   // 🔢 Verifica se a quantidade é válida
   const qtd = parseFloat(quantidade);
   if (isNaN(qtd) || qtd <= 0) {
-    alert("A quantidade deve ser um número positivo.");
+    exibirMensagem("A quantidade deve ser um número positivo.", "erro");
     return;
   }
 
@@ -371,12 +371,12 @@ document.getElementById("form-estoque").addEventListener("submit", async (e) => 
       body: JSON.stringify({ produto, quantidade: qtd, tipo, justificativa }),
     });
 
-    alert("Movimentação registrada com sucesso.");
+    exibirMensagem("Movimentação registrada com sucesso!");
     form.reset();
     document.getElementById("select-produto").focus();
     carregarEstoque();
   } catch (err) {
-    alert("Erro ao registrar movimentação.");
+    exibirMensagem("Erro ao registrar movimentação.", "erro");
   }
 });
 
@@ -443,7 +443,7 @@ document.getElementById("form-duplicata").addEventListener("submit", async (e) =
   const observacoes = form.observacoes.value;
 
   if (!produto || !valor || !vencimento) {
-    alert("Preencha todos os campos obrigatórios.");
+    exibirMensagem("Preencha todos os campos obrigatórios.", "erro");
     return;
   }
 
@@ -454,11 +454,11 @@ document.getElementById("form-duplicata").addEventListener("submit", async (e) =
       body: JSON.stringify({ produto, valor, vencimento, observacoes }),
     });
 
-    alert("Duplicata lançada com sucesso.");
+    exibirMensagem("Duplicata lançada com sucesso!");
     form.reset();
     carregarDuplicatas();
   } catch (err) {
-    alert("Erro ao lançar duplicata.");
+    exibirMensagem("Erro ao lançar duplicata.", "erro");
   }
 });
 
@@ -535,6 +535,17 @@ async function carregarDuplicatas() {
     console.error(err);
     lista.innerHTML = "<p>Erro ao carregar duplicatas.</p>";
   }
+}
+
+function exibirMensagem(texto, tipo = "sucesso") {
+  const div = document.getElementById("mensagem-sistema");
+  if (!div) return;
+  div.textContent = texto;
+  div.style.display = "block";
+  div.style.color = tipo === "erro" ? "red" : "green";
+  setTimeout(() => {
+    div.style.display = "none";
+  }, 4000);
 }
 
 aguardarBackend();
