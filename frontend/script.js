@@ -375,7 +375,10 @@ document.getElementById("form-estoque").addEventListener("submit", async (e) => 
 });
 
 function mostrarTela(tipo) {
-  ocultarTodasAsTelas(); // Limpa todas as seções antes de mostrar a certa
+  ocultarTodasAsTelas();
+
+  // Mostrar botão de voltar ao entrar em qualquer tela
+  document.querySelector('.btn-voltar-circulo').style.display = "flex";
 
   if (tipo === "promissorias") {
     document.getElementById("conteudo-sistema").style.display = "block";
@@ -392,10 +395,11 @@ function mostrarTela(tipo) {
 }
 
 function voltarMenu() {
-  document.getElementById("tela-estoque").style.display = "none";
-  document.getElementById("conteudo-sistema").style.display = "none";
-  document.getElementById("tela-duplicatas").style.display = "none";
+  ocultarTodasAsTelas();
   document.getElementById("menu-principal").style.display = "block";
+
+  // Ocultar botão de voltar ao retornar ao menu
+  document.querySelector('.btn-voltar-circulo').style.display = "none";
 }
 
 async function carregarEstoque() {
