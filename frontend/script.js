@@ -386,9 +386,32 @@ function mostrarTelaEstoque() {
   carregarEstoque();
 }
 
+function mostrarTela(tipo) {
+  ocultarTodasAsTelas();
+
+  // Mostrar botão de voltar ao entrar em qualquer tela
+  document.querySelector('.btn-voltar-circulo').style.display = "flex";
+
+  if (tipo === "promissorias") {
+    document.getElementById("conteudo-sistema").style.display = "block";
+    carregarPromissorias();
+    criarBotaoMostrarPagas();
+  } else if (tipo === "estoque") {
+    document.getElementById("tela-estoque").style.display = "block";
+    carregarProdutos();
+    carregarEstoque();
+  } else if (tipo === "duplicatas") {
+    document.getElementById("tela-duplicatas").style.display = "block";
+    carregarDuplicatas();
+  }
+}
+
 function voltarMenu() {
   ocultarTodasAsTelas();
-  document.getElementById('menu-principal').style.display = 'block';
+  document.getElementById("menu-principal").style.display = "block";
+
+  // Ocultar botão de voltar ao retornar ao menu
+  document.querySelector('.btn-voltar-circulo').style.display = "none";
 }
 
 function ocultarTodasAsTelas() {
