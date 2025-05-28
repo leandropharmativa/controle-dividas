@@ -300,3 +300,20 @@ form {
 .btn-voltar-circulo:hover {
   background-color: #45a049;
 }
+/* ✅ Botão de quitar duplicata (discreto e menor) */
+.btn-quitar-duplicata {
+  background-color: #4caf50;
+  color: white;
+  font-size: 0.85rem;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: auto;
+  transition: background-color 0.2s ease;
+}
+
+.btn-quitar-duplicata:hover {
+  background-color: #388e3c;
+}
+
