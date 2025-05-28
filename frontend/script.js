@@ -217,25 +217,25 @@ async function carregarPromissorias() {
 function renderPromissoria(p) {
   const li = document.createElement("li");
 
-  const btnQuitar = document.createElement("button");
-  btnQuitar.innerHTML = "✅";
-  btnQuitar.title = "Marcar como quitada";
-  btnQuitar.onclick = () => quitarPromissoria(p.id);
-
   const btnPagamentos = document.createElement("button");
-  btnPagamentos.textContent = "🧾";
+  btnPagamentos.textContent = "🧾Ver histórico";
   btnPagamentos.title = "Ver histórico";
   btnPagamentos.onclick = () => mostrarPagamentos(p.id, li);
 
   const btnParcial = document.createElement("button");
-  btnParcial.textContent = "-";
+  btnParcial.textContent = "💰Registrar Pagamento Parcial";
   btnParcial.title = "Registrar pagamento parcial";
   btnParcial.onclick = () => registrarPagamento(p.id, p.nome);
 
   const btnAdicionar = document.createElement("button");
-  btnAdicionar.textContent = "+💸";
+  btnAdicionar.textContent = "💸Adicionar Valor Devedor";
   btnAdicionar.title = "Adicionar valor à dívida";
   btnAdicionar.onclick = () => adicionarValor(p.id, p.nome);
+
+  const btnQuitar = document.createElement("button");
+  btnQuitar.innerHTML = "✅";
+  btnQuitar.title = "Marcar como quitada";
+  btnQuitar.onclick = () => quitarPromissoria(p.id);
 
   li.appendChild(btnQuitar);
   li.appendChild(btnPagamentos);
