@@ -535,8 +535,8 @@ async function carregarDuplicatas() {
 
         if (d.status !== "paga") {
           const btn = document.createElement("button");
-          btn.textContent = "✅";
-          btn.style.marginLeft = "1rem";
+         btn.textContent = "✅ Quitar";
+         btn.className = "btn-quitar-duplicata";
           btn.onclick = async () => {
             if (await confirmar("Confirmar quitação da duplicata?")) {
               await fetch(`https://controle-dividas.onrender.com/duplicatas/${d.id}/quitar`, {
