@@ -525,7 +525,6 @@ async function carregarDuplicatas() {
       if (titulo.includes("Pendentes")) {
       const total = duplicatas.reduce((acc, d) => acc + parseFloat(d.valor || 0), 0);
       const spanTotal = document.createElement("div");
-      spanTotal.textContent = `💰 Total pendente: R$${total.toFixed(2)}`;
       spanTotal.style.fontWeight = "bold";
       spanTotal.style.marginBottom = "1rem";
       spanTotal.style.color = "#c62828"; // tom vermelho
