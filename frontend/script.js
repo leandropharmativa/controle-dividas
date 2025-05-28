@@ -201,7 +201,7 @@ async function carregarPromissorias() {
     total += parseFloat(p.valorAtual);
   });
 
-  document.getElementById("total-dividas").textContent = `R$${total.toFixed(2)}`;
+  document.getElementById("total-dividas").textContent = `R$${total.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   if (filtroNome) {
     mostrarPagas(true);
