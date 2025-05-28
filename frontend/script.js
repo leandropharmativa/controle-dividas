@@ -448,7 +448,7 @@ async function carregarEstoque() {
     lista.appendChild(ul);
 
     const campoTotal = document.getElementById("valor-total-estoque");
-    campoTotal.textContent = `R$${totalGeral.toFixed(2).replace(".", ",")}`;
+    campoTotal.textContent = `R$${totalGeral.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   } catch (err) {
     lista.innerHTML = "<p>Erro ao carregar estoque.</p>";
   }
