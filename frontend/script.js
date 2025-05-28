@@ -505,8 +505,16 @@ async function carregarDuplicatas() {
     const criarSecao = (titulo, duplicatas, corIcone) => {
       const div = document.createElement("div");
       const h3 = document.createElement("h3");
+  
+      if (titulo.includes("Pendentes")) {
+      const total = duplicatas.reduce((acc, d) => acc + parseFloat(d.valor || 0), 0);
+      h3.innerHTML = `${titulo} <span style="font-weight: normal; font-size: 0.95rem; color: #c62828; margin-left: 8px;"> R$${total.toFixed(2)})</span>`;
+      } else {
       h3.textContent = titulo;
+      }
+
       div.appendChild(h3);
+
 
       if (duplicatas.length === 0) {
         const p = document.createElement("p");
