@@ -89,8 +89,8 @@ li {
 /* ✅ Botões de ação da lista */
 li button {
   border: none;
-  width: 36px;
-  height: 36px;
+  width: 160px;
+  height: 32px;
   cursor: pointer;
   border-radius: 4px;
   font-weight: bold;
