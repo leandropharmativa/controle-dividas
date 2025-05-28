@@ -528,7 +528,7 @@ async function carregarDuplicatas() {
 
         if (d.status !== "paga") {
           const btn = document.createElement("button");
-          btn.textContent = "✓ Quitar";
+          btn.textContent = "✅";
           btn.style.marginLeft = "1rem";
           btn.onclick = async () => {
             if (await confirmar("Confirmar quitação da duplicata?")) {
