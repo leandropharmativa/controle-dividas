@@ -50,16 +50,22 @@ document.getElementById("btn-acessar").addEventListener("click", async () => {
 });
 
 // 👁 Escolha do módulo após login
-document.getElementById('btn-promissorias').addEventListener('click', () => {
-  mostrarTela('promissorias');
+document.getElementById("btn-promissorias").addEventListener("click", () => {
+  document.getElementById("menu-principal").style.display = "none";
+  document.getElementById("conteudo-sistema").style.display = "block";
+  carregarPromissorias();
+  criarBotaoMostrarPagas();
 });
 
-document.getElementById('btn-estoque').addEventListener('click', () => {
-  mostrarTela('estoque');
+document.getElementById("btn-estoque").addEventListener("click", () => {
+  document.getElementById("menu-principal").style.display = "none";
+  mostrarTelaEstoque();
 });
 
-document.getElementById('btn-duplicatas').addEventListener('click', () => {
-  mostrarTela('duplicatas');
+document.getElementById("btn-duplicatas").addEventListener("click", () => {
+  document.getElementById("menu-principal").style.display = "none";
+  document.getElementById("tela-duplicatas").style.display = "block";
+  carregarDuplicatas();
 });
 
 // ➕ Criar nova promissória
@@ -87,7 +93,7 @@ form.addEventListener("submit", async (e) => {
 // ✅ Marcar como quitada
 async function quitarPromissoria(id) {
   if (!(await confirmar("Deseja realmente marcar como quitada?"))) return;
-  await fetch(${API_URL}/${id}/quitar, { method: "PUT" });
+  await fetch(`${API_URL}/${id}/quitar`, { method: "PUT" });
   carregarPromissorias();
 }
 
@@ -114,7 +120,7 @@ async function adicionarValor(id, nome) {
   if (!valor || isNaN(valor)) return;
   const observacao = await solicitarEntrada("Alguma observação?") || "";
 
-  await fetch(${API_URL}/${id}/adicionar, {
+  await fetch(`${API_URL}/${id}/adicionar`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ valorAdicional: valor, nome, observacao }),
@@ -133,8 +139,8 @@ async function mostrarPagamentos(id, container) {
   }
 
   const [resPagamentos, resAdicoes] = await Promise.all([
-    fetch(${PAGAMENTO_URL}/${id}),
-    fetch(${ADICAO_URL}/${id}),
+    fetch(`${PAGAMENTO_URL}/${id}`),
+    fetch(`${ADICAO_URL}/${id}`),
   ]);
 
   const pagamentos = await resPagamentos.json();
@@ -152,7 +158,7 @@ async function mostrarPagamentos(id, container) {
     adicoes.forEach((a) => {
       const dataBR = a.data.split("-").reverse().join("/");
       const li = document.createElement("li");
-      li.textContent = → R$${a.valor} - ${dataBR}${a.observacao ?  - ${a.observacao} : ""};
+      li.textContent = `→ R$${a.valor} - ${dataBR}${a.observacao ? ` - ${a.observacao}` : ""}`;
       ul.appendChild(li);
     });
   }
@@ -166,7 +172,7 @@ async function mostrarPagamentos(id, container) {
     pagamentos.forEach((p) => {
       const dataBR = p.data.split("-").reverse().join("/");
       const li = document.createElement("li");
-      li.textContent = → R$${p.valor} - ${dataBR}${p.observacao ?  - ${p.observacao} : ""};
+      li.textContent = `→ R$${p.valor} - ${dataBR}${p.observacao ? ` - ${p.observacao}` : ""}`;
       ul.appendChild(li);
     });
   }
@@ -200,7 +206,7 @@ async function carregarPromissorias() {
     total += parseFloat(p.valorAtual);
   });
 
-  document.getElementById("total-dividas").textContent = R$${total.toFixed(2)};
+  document.getElementById("total-dividas").textContent = `R$${total.toFixed(2)}`;
 
   if (filtroNome) {
     mostrarPagas(true);
@@ -246,14 +252,14 @@ function renderPromissoria(p) {
   const telefone = p.telefone.replace(/[^\d\-]/g, "");
   const spanNome = document.createElement("span");
   spanNome.style.fontWeight = "bold";
-  spanNome.textContent = ${p.nome} ${telefone};
+  spanNome.textContent = `${p.nome} ${telefone}`;
   li.appendChild(spanNome);
 
-  const texto = document.createTextNode( - R$${p.valorAtual} (original: R$${p.valor}) - ${dataBR});
+  const texto = document.createTextNode(` - R$${p.valorAtual} (original: R$${p.valor}) - ${dataBR}`);
   li.appendChild(texto);
 
   if (p.observacoes) {
-    const obs = document.createTextNode( - Obs.: ${p.observacoes});
+    const obs = document.createTextNode(` - Obs.: ${p.observacoes}`);
     li.appendChild(obs);
   }
 
@@ -281,7 +287,7 @@ function criarBotaoMostrarPagas() {
 // 📜 Lista de promissórias pagas
 async function mostrarPagas(apenasFiltradas = false) {
   const filtroNome = document.getElementById("filtro-nome").value;
-  const res = await fetch(${API_URL}/pagas);
+  const res = await fetch(`${API_URL}/pagas`);
   const pagas = await res.json();
 
   const filtradas = pagas.filter(p =>
@@ -305,8 +311,8 @@ async function mostrarPagas(apenasFiltradas = false) {
     li.style.color = "#777";
     const dataBR = p.data.split('-').reverse().join('/');
     const telefone = p.telefone.replace(/[^\d\-]/g, '');
-    const obs = p.observacoes ?  - Obs.: ${p.observacoes} : "";
-    li.textContent = ✓ ${p.nome} ${telefone} - R$${p.valor} - ${dataBR}${obs};
+    const obs = p.observacoes ? ` - Obs.: ${p.observacoes}` : "";
+    li.textContent = `✓ ${p.nome} ${telefone} - R$${p.valor} - ${dataBR}${obs}`;
     ul.appendChild(li);
   });
   divPagas.appendChild(ul);
@@ -374,22 +380,10 @@ document.getElementById("form-estoque").addEventListener("submit", async (e) => 
   }
 });
 
-function mostrarTela(tipo) {
-  ocultarTodasAsTelas();
-  if (tipo === 'promissorias') {
-    conteudoSistema.style.display = 'block';
-  } else if (tipo === 'estoque') {
-    telaEstoque.style.display = 'block';
-  } else if (tipo === 'duplicatas') {
-    telaDuplicatas.style.display = 'block';
-  }
-}
-
-function ocultarTodasAsTelas() {
-  menuPrincipal.style.display = 'none';
-  conteudoSistema.style.display = 'none';
-  telaEstoque.style.display = 'none';
-  telaDuplicatas.style.display = 'none';
+function mostrarTelaEstoque() {
+  document.getElementById("tela-estoque").style.display = "block";
+  carregarProdutos();
+  carregarEstoque();
 }
 
 function voltarMenu() {
@@ -423,7 +417,7 @@ async function carregarEstoque() {
       const total = parseFloat(reg.valorTotal) || qtd * preco;
       totalGeral += total;
 
-      li.innerHTML = <strong>${reg.produto}</strong> - ${qtd} und x R$${preco.toFixed(2)} = <strong>R$${total.toFixed(2)}</strong>;
+      li.innerHTML = `<strong>${reg.produto}</strong> - ${qtd} und x R$${preco.toFixed(2)} = <strong>R$${total.toFixed(2)}</strong>`;
       ul.appendChild(li);
     });
 
@@ -433,7 +427,7 @@ async function carregarEstoque() {
     const totalDiv = document.createElement("div");
     totalDiv.style.marginTop = "1rem";
     totalDiv.style.fontWeight = "bold";
-    totalDiv.textContent = 📦 Valor total do estoque: R$${totalGeral.toFixed(2)};
+    totalDiv.textContent = `📦 Valor total do estoque: R$${totalGeral.toFixed(2)}`;
     lista.appendChild(totalDiv);
   } catch (err) {
     lista.innerHTML = "<p>Erro ao carregar estoque.</p>";
@@ -479,7 +473,7 @@ async function carregarDuplicatas() {
     // Função para formatar datas no padrão BR
     const formatarData = (iso) => {
       const partes = iso.split("-");
-      return ${partes[2]}/${partes[1]}/${partes[0]};
+      return `${partes[2]}/${partes[1]}/${partes[0]}`;
     };
 
     // Ordenar por data de vencimento (asc)
@@ -505,10 +499,10 @@ async function carregarDuplicatas() {
       duplicatas.forEach(d => {
         const li = document.createElement("li");
         const venc = formatarData(d.vencimento);
-        const obs = d.observacoes ?  — Obs.: ${d.observacoes} : "";
+        const obs = d.observacoes ? ` — Obs.: ${d.observacoes}` : "";
         const icone = d.status === "paga" ? "🟢" : "🔴";
 
-        li.innerHTML = ${icone} <strong>${d.produto}</strong> — R$${parseFloat(d.valor).toFixed(2)} — Venc.: ${venc}${obs};
+        li.innerHTML = `${icone} <strong>${d.produto}</strong> — R$${parseFloat(d.valor).toFixed(2)} — Venc.: ${venc}${obs}`;
 
         if (d.status !== "paga") {
           const btn = document.createElement("button");
@@ -516,7 +510,7 @@ async function carregarDuplicatas() {
           btn.style.marginLeft = "1rem";
           btn.onclick = async () => {
             if (await confirmar("Confirmar quitação da duplicata?")) {
-              await fetch(https://controle-dividas.onrender.com/duplicatas/${d.id}/quitar, {
+              await fetch(`https://controle-dividas.onrender.com/duplicatas/${d.id}/quitar`, {
                 method: "PUT",
               });
               carregarDuplicatas();
