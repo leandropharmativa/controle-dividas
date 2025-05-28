@@ -51,21 +51,15 @@ document.getElementById("btn-acessar").addEventListener("click", async () => {
 
 // 👁 Escolha do módulo após login
 document.getElementById("btn-promissorias").addEventListener("click", () => {
-  document.getElementById("menu-principal").style.display = "none";
-  document.getElementById("conteudo-sistema").style.display = "block";
-  carregarPromissorias();
-  criarBotaoMostrarPagas();
+  mostrarTela('promissorias');
 });
 
 document.getElementById("btn-estoque").addEventListener("click", () => {
-  document.getElementById("menu-principal").style.display = "none";
-  mostrarTelaEstoque();
+  mostrarTela('estoque');
 });
 
 document.getElementById("btn-duplicatas").addEventListener("click", () => {
-  document.getElementById("menu-principal").style.display = "none";
-  document.getElementById("tela-duplicatas").style.display = "block";
-  carregarDuplicatas();
+  mostrarTela('duplicatas');
 });
 
 // ➕ Criar nova promissória
