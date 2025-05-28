@@ -50,16 +50,16 @@ document.getElementById("btn-acessar").addEventListener("click", async () => {
 });
 
 // 👁 Escolha do módulo após login
-document.getElementById("btn-promissorias").addEventListener("click", () => {
-  mostrarTela("promissorias");
+btnPromissorias.addEventListener('click', () => {
+  mostrarTela('promissorias');
 });
 
-document.getElementById("btn-estoque").addEventListener("click", () => {
-  mostrarTela("estoque");
+btnEstoque.addEventListener('click', () => {
+  mostrarTela('estoque');
 });
 
-document.getElementById("btn-duplicatas").addEventListener("click", () => {
-  mostrarTela("duplicatas");
+btnDuplicatas.addEventListener('click', () => {
+  mostrarTela('duplicatas');
 });
 
 // ➕ Criar nova promissória
@@ -86,16 +86,16 @@ form.addEventListener("submit", async (e) => {
 
 // ✅ Marcar como quitada
 async function quitarPromissoria(id) {
-  if (!confirm("Deseja realmente marcar como quitada?")) return;
+  if (!(await confirmar("Deseja realmente marcar como quitada?"))) return;
   await fetch(`${API_URL}/${id}/quitar`, { method: "PUT" });
   carregarPromissorias();
 }
 
 // ➖ Pagamento parcial
 async function registrarPagamento(id, nome) {
-  const valor = prompt("Informe o valor pago:");
+  const valor = await solicitarEntrada("Informe o valor pago:");
   if (!valor) return;
-  const observacao = prompt("Alguma observação?") || "";
+  const observacao = await solicitarEntrada("Alguma observação?") || "";
   const data = new Date().toISOString().split("T")[0];
 
   await fetch(PAGAMENTO_URL, {
@@ -110,9 +110,9 @@ async function registrarPagamento(id, nome) {
 
 // 💸 Adicionar valor
 async function adicionarValor(id, nome) {
-  const valor = prompt("Informe o valor adicional:");
+  const valor = await solicitarEntrada("Informe o valor adicional:");
   if (!valor || isNaN(valor)) return;
-  const observacao = prompt("Alguma observação?") || "";
+  const observacao = await solicitarEntrada("Alguma observação?") || "";
 
   await fetch(`${API_URL}/${id}/adicionar`, {
     method: "PUT",
@@ -374,37 +374,22 @@ document.getElementById("form-estoque").addEventListener("submit", async (e) => 
   }
 });
 
-function mostrarTelaEstoque() {
-  document.getElementById("tela-estoque").style.display = "block";
-  carregarProdutos();
-  carregarEstoque();
-}
-
 function mostrarTela(tipo) {
   ocultarTodasAsTelas();
-
-  // Mostrar botão de voltar ao entrar em qualquer tela
-  document.querySelector('.btn-voltar-circulo').style.display = "flex";
-
-  if (tipo === "promissorias") {
-    document.getElementById("conteudo-sistema").style.display = "block";
-    carregarPromissorias();
-    criarBotaoMostrarPagas();
-  } else if (tipo === "estoque") {
-    document.getElementById("tela-estoque").style.display = "block";
-    carregarProdutos();
-    carregarEstoque();
-  } else if (tipo === "duplicatas") {
-    document.getElementById("tela-duplicatas").style.display = "block";
-    carregarDuplicatas();
+  if (tipo === 'promissorias') {
+    conteudoSistema.style.display = 'block';
+  } else if (tipo === 'estoque') {
+    telaEstoque.style.display = 'block';
+  } else if (tipo === 'duplicatas') {
+    telaDuplicatas.style.display = 'block';
   }
 }
 
 function ocultarTodasAsTelas() {
-  document.getElementById("menu-principal").style.display = "none";
-  document.getElementById("conteudo-sistema").style.display = "none";
-  document.getElementById("tela-estoque").style.display = "none";
-  document.getElementById("tela-duplicatas").style.display = "none";
+  menuPrincipal.style.display = 'none';
+  conteudoSistema.style.display = 'none';
+  telaEstoque.style.display = 'none';
+  telaDuplicatas.style.display = 'none';
 }
 
 function voltarMenu() {
@@ -530,7 +515,7 @@ async function carregarDuplicatas() {
           btn.textContent = "✓ Quitar";
           btn.style.marginLeft = "1rem";
           btn.onclick = async () => {
-            if (confirm("Confirmar quitação da duplicata?")) {
+            if (await confirmar("Confirmar quitação da duplicata?")) {
               await fetch(`https://controle-dividas.onrender.com/duplicatas/${d.id}/quitar`, {
                 method: "PUT",
               });
