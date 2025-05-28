@@ -508,7 +508,7 @@ async function carregarDuplicatas() {
   
       if (titulo.includes("Pendentes")) {
       const total = duplicatas.reduce((acc, d) => acc + parseFloat(d.valor || 0), 0);
-      h3.innerHTML = `${titulo} <span style="font-weight: normal; font-size: 0.95rem; color: #c62828; margin-left: 8px;"> R$${total.toFixed(2)})</span>`;
+      h3.innerHTML = `${titulo}  R$${total.toFixed(2)}`;
       } else {
       h3.textContent = titulo;
       }
