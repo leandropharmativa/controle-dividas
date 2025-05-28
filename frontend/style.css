@@ -102,7 +102,7 @@ li button {
 
 /* 🎨 Cores dos botões */
 li button:nth-child(1) { background-color: #2196f3; color: white; } /* 💬 Histórico */
-li button:nth-child(2) { background-color: #ff9800; color: white; } /* - Parcial */
+li button:nth-child(2) { background-color: #ff9800; color: white; width: 180px; } /* - Parcial */
 li button:nth-child(3) { background-color: #9c27b0; color: white; } /* +💸 Adicionar */
 li button:nth-child(4) { background-color: #4caf50; color: white; Width: 32px; } /* ✓ Quitar */
 
