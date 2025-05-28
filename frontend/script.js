@@ -508,7 +508,7 @@ async function carregarDuplicatas() {
   
       if (titulo.includes("Pendentes")) {
       const total = duplicatas.reduce((acc, d) => acc + parseFloat(d.valor || 0), 0);
-      h3.innerHTML = `${titulo} — R$${total.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      h3.innerHTML = `${titulo}: R$${total.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       } else {
       h3.textContent = titulo;
       }
