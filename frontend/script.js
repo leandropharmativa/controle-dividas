@@ -446,11 +446,8 @@ async function carregarEstoque() {
     lista.innerHTML = "";
     lista.appendChild(ul);
 
-    const totalDiv = document.createElement("div");
-    totalDiv.style.marginTop = "1rem";
-    totalDiv.style.fontWeight = "bold";
-    totalDiv.textContent = `📦 Valor total do estoque: R$${totalGeral.toFixed(2)}`;
-    lista.appendChild(totalDiv);
+  const campoTotal = document.getElementById("valor-total-estoque");
+  campoTotal.textContent = `📦 Valor total do estoque: R$${totalGeral.toFixed(2).replace(".", ",")}`;
   } catch (err) {
     lista.innerHTML = "<p>Erro ao carregar estoque.</p>";
   }
