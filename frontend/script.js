@@ -218,7 +218,7 @@ function renderPromissoria(p) {
   const li = document.createElement("li");
 
   const btnQuitar = document.createElement("button");
-  btnQuitar.textContent = "✓";
+  btnQuitar.innerHTML = "✅";
   btnQuitar.title = "Marcar como quitada";
   btnQuitar.onclick = () => quitarPromissoria(p.id);
 
