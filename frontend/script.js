@@ -216,46 +216,70 @@ async function carregarPromissorias() {
 // 🧍 Renderiza promissória ativa
 function renderPromissoria(p) {
   const li = document.createElement("li");
+  li.style.display = "flex";
+  li.style.justifyContent = "space-between";
+  li.style.alignItems = "center";
+  li.style.borderBottom = "1px solid #ccc";
+  li.style.padding = "0.5rem 0";
 
-  const btnPagamentos = document.createElement("button");
-  btnPagamentos.textContent = "🧾Histórico";
-  btnPagamentos.title = "Ver histórico";
-  btnPagamentos.onclick = () => mostrarPagamentos(p.id, li);
-
-  const btnParcial = document.createElement("button");
-  btnParcial.textContent = "💰Pagamento Parcial";
-  btnParcial.title = "Registrar pagamento parcial";
-  btnParcial.onclick = () => registrarPagamento(p.id, p.nome);
-
-  const btnAdicionar = document.createElement("button");
-  btnAdicionar.textContent = "💸Adicionar Valor";
-  btnAdicionar.title = "Adicionar valor à dívida";
-  btnAdicionar.onclick = () => adicionarValor(p.id, p.nome);
-
-  const btnQuitar = document.createElement("button");
-  btnQuitar.innerHTML = "✅";
-  btnQuitar.title = "Marcar como quitada";
-  btnQuitar.onclick = () => quitarPromissoria(p.id);
-
-  li.appendChild(btnPagamentos);
-  li.appendChild(btnParcial);
-  li.appendChild(btnAdicionar);
-  li.appendChild(btnQuitar);
+  // 📌 Parte esquerda: dados da promissória
+  const info = document.createElement("div");
+  info.style.flex = "1";
+  info.style.paddingRight = "1rem";
 
   const dataBR = p.data.split("-").reverse().join("/");
   const telefone = p.telefone.replace(/[^\d\-]/g, "");
   const spanNome = document.createElement("span");
   spanNome.style.fontWeight = "bold";
   spanNome.textContent = `${p.nome} ${telefone}`;
-  li.appendChild(spanNome);
 
   const texto = document.createTextNode(` - R$${p.valorAtual} (original: R$${p.valor}) - ${dataBR}`);
-  li.appendChild(texto);
+
+  info.appendChild(spanNome);
+  info.appendChild(texto);
 
   if (p.observacoes) {
-    const obs = document.createTextNode(` - Obs.: ${p.observacoes}`);
-    li.appendChild(obs);
+    const obs = document.createElement("div");
+    obs.textContent = `Obs.: ${p.observacoes}`;
+    obs.style.fontSize = "0.85em";
+    obs.style.color = "#555";
+    info.appendChild(obs);
   }
+
+  // 📌 Parte direita: botões
+  const botoes = document.createElement("div");
+  botoes.style.display = "flex";
+  botoes.style.gap = "0.25rem";
+  botoes.style.flexShrink = "0";
+
+  const btnPagamentos = document.createElement("button");
+  btnPagamentos.textContent = "🧾";
+  btnPagamentos.title = "Ver histórico";
+  btnPagamentos.onclick = () => mostrarPagamentos(p.id, li);
+
+  const btnParcial = document.createElement("button");
+  btnParcial.textContent = "💰";
+  btnParcial.title = "Registrar pagamento parcial";
+  btnParcial.onclick = () => registrarPagamento(p.id, p.nome);
+
+  const btnAdicionar = document.createElement("button");
+  btnAdicionar.textContent = "💸";
+  btnAdicionar.title = "Adicionar valor à dívida";
+  btnAdicionar.onclick = () => adicionarValor(p.id, p.nome);
+
+  const btnQuitar = document.createElement("button");
+  btnQuitar.textContent = "✅";
+  btnQuitar.title = "Marcar como quitada";
+  btnQuitar.onclick = () => quitarPromissoria(p.id);
+
+  botoes.appendChild(btnPagamentos);
+  botoes.appendChild(btnParcial);
+  botoes.appendChild(btnAdicionar);
+  botoes.appendChild(btnQuitar);
+
+  // ➕ Monta o item
+  li.appendChild(info);
+  li.appendChild(botoes);
 
   return li;
 }
