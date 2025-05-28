@@ -50,16 +50,16 @@ document.getElementById("btn-acessar").addEventListener("click", async () => {
 });
 
 // 👁 Escolha do módulo após login
-btnPromissorias.addEventListener('click', () => {
-  mostrarTela('promissorias');
+document.getElementById("btn-promissorias").addEventListener("click", () => {
+  mostrarTela("promissorias");
 });
 
-btnEstoque.addEventListener('click', () => {
-  mostrarTela('estoque');
+document.getElementById("btn-estoque").addEventListener("click", () => {
+  mostrarTela("estoque");
 });
 
-btnDuplicatas.addEventListener('click', () => {
-  mostrarTela('duplicatas');
+document.getElementById("btn-duplicatas").addEventListener("click", () => {
+  mostrarTela("duplicatas");
 });
 
 // ➕ Criar nova promissória
