@@ -218,17 +218,17 @@ function renderPromissoria(p) {
   const li = document.createElement("li");
 
   const btnPagamentos = document.createElement("button");
-  btnPagamentos.textContent = "🧾Ver histórico";
+  btnPagamentos.textContent = "🧾Histórico";
   btnPagamentos.title = "Ver histórico";
   btnPagamentos.onclick = () => mostrarPagamentos(p.id, li);
 
   const btnParcial = document.createElement("button");
-  btnParcial.textContent = "💰Registrar Pagamento Parcial";
+  btnParcial.textContent = "💰Pagamento Parcial";
   btnParcial.title = "Registrar pagamento parcial";
   btnParcial.onclick = () => registrarPagamento(p.id, p.nome);
 
   const btnAdicionar = document.createElement("button");
-  btnAdicionar.textContent = "💸Adicionar Valor Devedor";
+  btnAdicionar.textContent = "💸Adicionar Valor";
   btnAdicionar.title = "Adicionar valor à dívida";
   btnAdicionar.onclick = () => adicionarValor(p.id, p.nome);
 
@@ -237,10 +237,10 @@ function renderPromissoria(p) {
   btnQuitar.title = "Marcar como quitada";
   btnQuitar.onclick = () => quitarPromissoria(p.id);
 
-  li.appendChild(btnQuitar);
   li.appendChild(btnPagamentos);
   li.appendChild(btnParcial);
   li.appendChild(btnAdicionar);
+  li.appendChild(btnQuitar);
 
   const dataBR = p.data.split("-").reverse().join("/");
   const telefone = p.telefone.replace(/[^\d\-]/g, "");
