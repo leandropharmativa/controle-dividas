@@ -646,7 +646,7 @@ function solicitarEntrada(texto, valorPadrao = "") {
   });
 }
 
-setInterval(atualizarStatusBackend, 10000); // verifica a cada 30 segundos
+setInterval(atualizarStatusBackend, 20000); // verifica a cada 30 segundos
 atualizarStatusBackend(); // primeira verificação imediata
 
 aguardarBackend();
