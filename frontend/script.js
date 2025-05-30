@@ -34,21 +34,18 @@ let divPagas, btnPagas, visivelPagas = false;
 
 //atualiza status do backend
 async function atualizarStatusBackend() {
-  const divStatus = document.getElementById("status-backend");
-  if (!divStatus) return;
+  const barra = document.getElementById("barra-status");
+  if (!barra) return;
 
   try {
     const res = await fetch("https://controle-dividas.onrender.com/");
     if (res.ok) {
-      divStatus.textContent = "🟢 Servidor online";
-      divStatus.style.color = "green";
+      barra.style.backgroundColor = "green";
     } else {
-      divStatus.textContent = "🔴 Servidor offline";
-      divStatus.style.color = "red";
+      barra.style.backgroundColor = "red";
     }
   } catch {
-    divStatus.textContent = "🔴 Servidor offline";
-    divStatus.style.color = "red";
+    barra.style.backgroundColor = "red";
   }
 }
 
@@ -649,7 +646,7 @@ function solicitarEntrada(texto, valorPadrao = "") {
   });
 }
 
-setInterval(atualizarStatusBackend, 30000); // verifica a cada 30 segundos
+setInterval(atualizarStatusBackend, 10000); // verifica a cada 30 segundos
 atualizarStatusBackend(); // primeira verificação imediata
 
 aguardarBackend();
