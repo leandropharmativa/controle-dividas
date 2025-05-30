@@ -8,6 +8,18 @@
 </head>
 <body>
 
+  <!-- exibe status do backend -->
+  <div id="barra-status" style="
+  height: 2px;
+  width: 100%;
+  background-color: gray;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+"></div>
+
+
 <!-- ⏳ Tela de loading -->
 <div id="tela-loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;">
   <h2>⏳ Iniciando sistema...</h2>
@@ -127,12 +139,7 @@
 
 <!-- 🔙 Botão flutuante para voltar -->
 <button class="btn-voltar-circulo" onclick="voltarMenu()">⮌</button>
-
-<div id="status-backend" style="text-align:center; font-size: 0.9em; color: gray; margin-top: 10px;">
-  🔄 Verificando status do servidor...
-</div>
-
-  
+ 
 <!-- 🔧 Scripts -->
 <script src="script.js"></script>
 
